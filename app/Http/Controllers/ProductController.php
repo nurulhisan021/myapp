@@ -11,13 +11,19 @@ class ProductController extends Controller
     public function index()
     {
         $q = request('q');
+
         $products = Product::query()
-            ->when($q, fn($qb) => $qb->where('name','like',"%{$q}%"))
+            ->when($q, function ($qb) use ($q) {
+                $qb->where(function ($qq) use ($q) {
+                    $qq->where('name', 'like', "%{$q}%")
+                       ->orWhere('category', 'like', "%{$q}%");
+                });
+            })
             ->orderByDesc('id')
             ->paginate(12)
             ->withQueryString();
 
-        return view('products.index', compact('products','q'));
+        return view('products.index', compact('products', 'q'));
     }
 
     public function create()
@@ -36,12 +42,14 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('products', 'public'); // => products/xxx.jpg
+            $data['image'] = $request->file('image')->store('products', 'public');
         }
 
         Product::create($data);
 
-        return redirect()->route('products.index')->with('ok','เพิ่มสินค้าแล้ว');
+        // มาจาก admin → กลับแดชบอร์ด /admin
+        $to = $request->routeIs('admin.*') ? 'admin.dashboard' : 'products.index';
+        return redirect()->route($to)->with('ok', 'เพิ่มสินค้าแล้ว');
     }
 
     public function show(Product $product)
@@ -57,16 +65,16 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $data = $request->validate([
-            'name'        => 'required|string|max:150',
-            'category'    => 'nullable|string|max:50',
-            'price'       => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
-            'remove_image'=> 'sometimes|boolean',
+            'name'         => 'required|string|max:150',
+            'category'     => 'nullable|string|max:50',
+            'price'        => 'required|numeric|min:0',
+            'description'  => 'nullable|string',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
+            'remove_image' => 'sometimes|boolean',
         ]);
 
-        $old = $product->image;
-        $remove = (bool)$request->input('remove_image');
+        $old    = $product->image;
+        $remove = (bool) $request->input('remove_image');
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('products', 'public');
@@ -80,7 +88,8 @@ class ProductController extends Controller
             Storage::disk('public')->delete($old);
         }
 
-        return redirect()->route('products.index')->with('ok','อัปเดตสินค้าแล้ว');
+        $to = $request->routeIs('admin.*') ? 'admin.dashboard' : 'products.index';
+        return redirect()->route($to)->with('ok', 'อัปเดตสินค้าแล้ว');
     }
 
     public function destroy(Product $product)
@@ -88,8 +97,10 @@ class ProductController extends Controller
         if ($product->image && Storage::disk('public')->exists($product->image)) {
             Storage::disk('public')->delete($product->image);
         }
+
         $product->delete();
 
-        return redirect()->route('products.index')->with('ok','ลบสินค้าแล้ว');
+        $to = request()->routeIs('admin.*') ? 'admin.dashboard' : 'products.index';
+        return redirect()->route($to)->with('ok', 'ลบสินค้าแล้ว');
     }
 }

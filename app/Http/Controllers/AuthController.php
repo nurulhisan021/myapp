@@ -2,20 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;   // ใช้ระบบ Auth ของ Laravel
-use Illuminate\Support\Facades\Hash;   // สำหรับเข้ารหัสรหัสผ่าน
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     public function showLogin()
     {
+        if (Auth::check()) {
+            return Auth::user()->is_admin
+                ? redirect()->route('admin.dashboard')
+                : redirect()->route('account.home');
+        }
         return view('auth.login');
+    }
+
+    public function login(Request $request)
+    {
+        $cred = $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string',
+            'remember' => 'sometimes|boolean',
+        ]);
+
+        $remember = (bool)($cred['remember'] ?? false);
+
+        if (Auth::attempt(['email'=>$cred['email'], 'password'=>$cred['password']], $remember)) {
+            $request->session()->regenerate();
+
+            return Auth::user()->is_admin
+                ? redirect()->intended(route('admin.dashboard'))->with('ok','ยินดีต้อนรับแอดมิน')
+                : redirect()->intended(route('account.home'))->with('ok','เข้าสู่ระบบสำเร็จ');
+        }
+        return back()->withErrors(['email'=>'อีเมลหรือรหัสผ่านไม่ถูกต้อง'])->onlyInput('email');
     }
 
     public function showRegister()
     {
+        if (Auth::check()) return redirect()->route('account.home');
         return view('auth.register');
     }
 
@@ -24,37 +50,20 @@ class AuthController extends Controller
         $data = $request->validate([
             'name'     => 'required|string|max:100',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed', // ต้องมี password_confirmation
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
         $user = User::create([
             'name'     => $data['name'],
-            'email'    => strtolower(trim($data['email'])),
+            'email'    => $data['email'],
             'password' => Hash::make($data['password']),
+            'is_admin' => false, // ลูกค้าปกติ
         ]);
 
-        Auth::login($user); // ล็อกอินทันทีหลังสมัคร
-        return redirect()->intended(route('account.home'))->with('ok', 'สมัครสมาชิกและเข้าสู่ระบบเรียบร้อยค่ะ');
-    }
+        Auth::login($user);
+        $request->session()->regenerate();
 
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required|string',
-        ]);
-
-        $remember = (bool) $request->input('remember', false);
-
-        // แปลง email ให้เป็น lower-case ก่อนเทียบ
-        $credentials['email'] = strtolower(trim($credentials['email']));
-
-        if (Auth::attempt($credentials, $remember)) {
-            $request->session()->regenerate(); // ปลอดภัยขึ้น
-            return redirect()->intended(route('account.home'))->with('ok','ยินดีต้อนรับค่ะ');
-        }
-
-        return back()->withInput()->with('error','อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+        return redirect()->route('account.home')->with('ok','สมัครสมาชิกสำเร็จ');
     }
 
     public function logout(Request $request)
@@ -62,7 +71,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        return redirect()->route('login')->with('ok','ออกจากระบบแล้ว');
+        return redirect()->route('shop.home')->with('ok','ออกจากระบบแล้ว');
     }
 }

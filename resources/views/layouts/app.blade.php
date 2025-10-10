@@ -2,45 +2,149 @@
 <html lang="th">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>@yield('title','MyShop')</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  {{-- Tailwind CDN --}}
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#ec4899', dark: '#db2777' }, // pink
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="min-h-screen bg-gray-50">
-  <nav class="bg-white border-b">
-  <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-    <a href="{{ url('/') }}" class="font-semibold text-lg">🛍️ MyShop</a>
+<body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
+  @php
+    $cartCount = collect(session('cart',[]))->sum('qty');
+  @endphp
 
-    <div class="flex items-center gap-4">
-      <a class="text-sm text-gray-600" href="{{ route('products.index') }}">สินค้า</a>
-      <a class="text-sm text-gray-600" href="{{ route('cart.index') }}">ตะกร้า</a>
+  {{-- Header / Navbar --}}
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
 
-      @auth
-        <a class="text-sm text-gray-600" href="{{ route('account.home') }}">
-          สวัสดี, {{ Str::limit(auth()->user()->name, 12) }}
+      {{-- Left: Brand --}}
+      <a href="{{ route('shop.home') }}" class="flex items-center gap-2 font-bold text-lg">
+        <span>🛍️</span><span>MyShop</span>
+      </a>
+
+      {{-- Center: main menu (desktop) --}}
+      <nav class="hidden md:flex items-center gap-6 text-sm">
+        <a href="{{ route('products.index') }}" class="hover:text-brand">สินค้า</a>
+        <a href="{{ route('cart.index') }}" class="hover:text-brand flex items-center gap-2">
+          <span>ตะกร้า</span>
+          @if($cartCount)
+            <span class="px-2 py-0.5 rounded-full bg-brand text-white text-xs">{{ $cartCount }}</span>
+          @endif
         </a>
-        <form method="POST" action="{{ route('logout') }}">
-          @csrf
-          <button class="text-sm text-gray-600 hover:underline">ออกจากระบบ</button>
-        </form>
-      @else
-        <a class="text-sm text-gray-600" href="{{ route('login') }}">เข้าสู่ระบบ</a>
-        <a class="text-sm text-gray-600" href="{{ route('register') }}">สมัครสมาชิก</a>
-      @endauth
-    </div>
-  </div>
-</nav>
+      </nav>
 
-  <main class="max-w-5xl mx-auto p-4">
-    @if(session('ok'))
-      <div class="mb-4 rounded bg-green-50 border border-green-200 text-green-800 px-4 py-3">
-        {{ session('ok') }}
+      {{-- Right: auth actions (desktop) - ชุดเดียวพอ --}}
+      <div class="hidden md:flex items-center gap-3">
+        @auth
+          @if(auth()->user()->is_admin)
+            <a href="{{ route('admin.dashboard') }}"
+               class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm">
+              แอดมิน
+            </a>
+          @endif
+          <a href="{{ route('account.home') }}" class="text-sm hover:text-brand">บัญชีของฉัน</a>
+          <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 text-sm">ออกจากระบบ</button>
+          </form>
+        @endauth
+
+        @guest
+          <a href="{{ route('login') }}" class="text-sm hover:text-brand">เข้าสู่ระบบ</a>
+          <a href="{{ route('register') }}"
+             class="px-4 py-2 rounded-xl bg-brand text-white hover:bg-brand-dark text-sm">
+            สมัครสมาชิก
+          </a>
+        @endguest
       </div>
-    @endif
+
+      {{-- Mobile menu button --}}
+      <button id="mobileMenuBtn"
+              class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border">
+        ☰
+      </button>
+    </div>
+
+    {{-- Mobile drawer --}}
+    <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col gap-3 text-sm">
+        <a href="{{ route('products.index') }}" class="hover:text-brand">สินค้า</a>
+        <a href="{{ route('cart.index') }}" class="hover:text-brand flex items-center gap-2">
+          <span>ตะกร้า</span>
+          @if($cartCount)
+            <span class="px-2 py-0.5 rounded-full bg-brand text-white text-xs">{{ $cartCount }}</span>
+          @endif
+        </a>
+
+        @auth
+          @if(auth()->user()->is_admin)
+            <a href="{{ route('admin.dashboard') }}" class="hover:text-brand">แอดมิน</a>
+          @endif
+          <a href="{{ route('account.home') }}" class="hover:text-brand">บัญชีของฉัน</a>
+          <form action="{{ route('logout') }}" method="POST" class="pt-2 border-t">
+            @csrf
+            <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 w-full text-left">ออกจากระบบ</button>
+          </form>
+        @endauth
+
+        @guest
+          <a href="{{ route('login') }}" class="hover:text-brand">เข้าสู่ระบบ</a>
+          <a href="{{ route('register') }}"
+             class="px-3 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark text-center">
+            สมัครสมาชิก
+          </a>
+        @endguest
+      </div>
+    </div>
+  </header>
+
+  {{-- Flash message --}}
+  @if(session('ok') || session('error'))
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-4">
+      @if(session('ok'))
+        <div class="mb-4 rounded-lg border border-green-200 bg-green-50 text-green-800 px-4 py-3">
+          {{ session('ok') }}
+        </div>
+      @endif
+      @if(session('error'))
+        <div class="mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 px-4 py-3">
+          {{ session('error') }}
+        </div>
+      @endif
+    </div>
+  @endif
+
+  {{-- Content --}}
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
     @yield('content')
   </main>
-  <footer class="max-w-5xl mx-auto px-4 py-6 text-center text-xs text-gray-500">
-    © {{ date('Y') }} MyShop
+
+  {{-- Footer --}}
+  <footer class="border-t bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-sm text-gray-500 flex flex-wrap justify-between gap-2">
+      <p>© {{ date('Y') }} MyShop — All rights reserved.</p>
+      <p>Made with ❤️ & Tailwind CSS</p>
+    </div>
   </footer>
+
+  {{-- Scripts --}}
+  <script>
+    // toggle เมนูมือถือ
+    const btn = document.getElementById('mobileMenuBtn');
+    const panel = document.getElementById('mobileMenu');
+    btn?.addEventListener('click', () => panel.classList.toggle('hidden'));
+  </script>
+  @stack('scripts')
 </body>
 </html>

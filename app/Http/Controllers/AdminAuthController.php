@@ -8,35 +8,40 @@ class AdminAuthController extends Controller
 {
     public function showLogin()
     {
+        if (session('is_admin')) {
+            return redirect()->route('admin.dashboard');
+        }
         return view('admin.login');
     }
 
     public function login(Request $request)
     {
-        $data = $request->validate([
+        $cred = $request->validate([
             'email'    => 'required|email',
             'password' => 'required|string',
         ]);
 
-        // อ่านจาก config (ปลอดภัยต่อการ cache)
-        $emailCfg = (string) config('admin.email');
-        $passCfg  = (string) config('admin.password');
+        // อ่านจาก config ถ้ามี; ถ้าไม่มี fallback ไป env (กันเคสยังไม่เพิ่มใน config/app.php)
+        $okEmail = (string) (config('app.admin_email') ?? env('ADMIN_EMAIL'));
+        $okPass  = (string) (config('app.admin_password') ?? env('ADMIN_PASSWORD'));
 
-        // เทียบแบบตัดช่องว่างและไม่แคร์พิมพ์เล็กใหญ่สำหรับอีเมล
-        $emailOk = strcasecmp(trim($data['email']), trim($emailCfg)) === 0;
-        $passOk  = hash_equals((string) $data['password'], $passCfg);
+        $email = strtolower(trim($cred['email']));
+        $pass  = (string) $cred['password'];
 
-        if ($emailOk && $passOk) {
-            session(['is_admin' => true, 'admin_email' => $emailCfg]);
-            return redirect()->intended(route('admin.dashboard'))->with('ok', 'ยินดีต้อนรับค่ะ');
+        if ($okEmail && $okPass && $email === strtolower($okEmail) && hash_equals($okPass, $pass)) {
+            $request->session()->put('is_admin', true);
+            $request->session()->regenerate();
+            return redirect()->intended(route('admin.dashboard'))->with('ok', 'ยินดีต้อนรับ');
         }
 
-        return back()->withInput()->with('error', 'อีเมลหรือรหัสผ่านไม่ถูกต้อง');
+        return back()->withErrors(['email' => 'อีเมลหรือรหัสผ่านไม่ถูกต้อง'])->onlyInput('email');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        session()->forget(['is_admin', 'admin_email']);
+        $request->session()->forget('is_admin');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         return redirect()->route('admin.login')->with('ok', 'ออกจากระบบแล้ว');
     }
 }
