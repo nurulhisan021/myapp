@@ -42,12 +42,16 @@
                 </div>
             @else
                 {{-- Logged-in User "Add to Cart" Form --}}
-                <form action="{{ route('cart.add') }}" method="POST" class="mt-3 flex items-center gap-2">
-                    @csrf
-                    <input type="hidden" name="product_id" value="{{ $p->id }}">
-                    <input type="number" name="qty" value="1" min="1" class="w-16 rounded-lg border-gray-300 text-center">
-                    <button class="px-3 py-1.5 rounded-lg bg-brand text-white hover:bg-brand-dark">🛒 ใส่ตะกร้า</button>
-                </form>
+                @if($p->stock > 0)
+                    <form action="{{ route('cart.add') }}" method="POST" class="mt-3 flex items-center gap-2">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $p->id }}">
+                        <input type="number" name="qty" value="1" min="1" max="{{ $p->stock }}" class="w-16 rounded-lg border-gray-300 text-center">
+                        <button class="px-3 py-1.5 rounded-lg bg-brand text-white hover:bg-brand-dark">🛒 ใส่ตะกร้า</button>
+                    </form>
+                @else
+                    <button class="mt-3 w-full px-3 py-1.5 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed" disabled>สินค้าหมด</button>
+                @endif
             @endif
         @else
             {{-- Guest "Login" Button --}}

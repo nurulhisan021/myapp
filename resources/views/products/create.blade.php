@@ -76,6 +76,10 @@
                             <input type="number" step="0.01" min="0" name="price" id="price" value="{{ old('price') }}" required class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
                         </div>
                     </div>
+                    <div>
+                        <label for="stock" class="block text-sm font-medium text-gray-700 mb-1">จำนวนสต็อก</label>
+                        <input type="number" min="0" name="stock" id="stock" value="{{ old('stock', 0) }}" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
+                    </div>
                 </div>
             </div>
         </div>

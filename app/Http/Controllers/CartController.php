@@ -30,15 +30,21 @@ class CartController extends Controller
         ]);
 
         $product = Product::findOrFail($data['product_id']);
-        $qty = $data['qty'] ?? 1;
+        $qtyToAdd = $data['qty'] ?? 1;
 
         $cart = session('cart', []);
+        $currentQtyInCart = $cart[$product->id]['qty'] ?? 0;
+
+        // Check stock availability
+        if ($product->stock < ($currentQtyInCart + $qtyToAdd)) {
+            return back()->with('error', 'สต็อกสินค้าไม่เพียงพอ (มีอยู่: ' . $product->stock . ' ชิ้น)');
+        }
 
         if (isset($cart[$product->id])) {
-            $cart[$product->id]['qty'] += $qty;
+            $cart[$product->id]['qty'] += $qtyToAdd;
         } else {
             $cart[$product->id] = [
-                'qty'   => $qty,
+                'qty'   => $qtyToAdd,
             ];
         }
 

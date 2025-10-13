@@ -15,10 +15,10 @@
         <table class="w-full text-left">
             <thead class="border-b bg-gray-50">
                 <tr>
-                    <th class="p-4">เลขที่สั่งซื้อ</th>
+                    <th class="p-4">คำสั่งซื้อ</th>
                     <th class="p-4">วันที่</th>
                     <th class="p-4">สถานะ</th>
-                    <th class="p-4">จำนวนรายการ</th>
+                    <th class="p-4">จำนวน</th>
                     <th class="p-4 text-right">ยอดรวม</th>
                     <th class="p-4"></th>
                 </tr>
@@ -49,12 +49,16 @@
                                 @endswitch
                             </span>
                         </td>
-                        <td class="p-4">{{ $order->items_count }}</td>
+                        <td class="p-4">{{ $order->items_count }} รายการ</td>
                         <td class="p-4 text-right font-semibold">฿{{ number_format($order->total_amount, 2) }}</td>
-                        <td class="p-4 text-right">
-                            <a href="{{ route('account.orders.show', $order) }}" class="text-brand hover:underline">
-                                ดูรายละเอียด
-                            </a>
+                        <td class="p-4 text-right space-x-2 whitespace-nowrap">
+                            <a href="{{ route('account.orders.show', $order) }}" class="text-brand hover:underline text-sm">ดูรายละเอียด</a>
+                            @if($order->status == 'pending')
+                            <form action="{{ route('account.orders.cancel', $order) }}" method="POST" class="inline" onsubmit="return confirm('คุณต้องการยกเลิกคำสั่งซื้อนี้ใช่หรือไม่?');">
+                                @csrf
+                                <button class="text-red-500 hover:underline text-sm">ยกเลิก</button>
+                            </form>
+                            @endif
                         </td>
                     </tr>
                 @empty
@@ -65,9 +69,7 @@
                     </tr>
                 @endforelse
             </tbody>
-        </table>
-
-        @if($orders->hasPages())
+        </table>        @if($orders->hasPages())
             <div class="p-4 border-t">
                 {{ $orders->links() }}
             </div>

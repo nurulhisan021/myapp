@@ -11,6 +11,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\BankAccountController;
+use App\Http\Controllers\Admin\ReportController;
 
 // หน้าแรก (ช็อป)
 Route::get('/', [ShopController::class, 'home'])->name('shop.home');
@@ -39,6 +40,7 @@ Route::middleware('auth')->group(function () {
     // Order History
     Route::get('/account', [OrderController::class, 'index'])->name('account.orders.index');
     Route::get('/account/orders/{order}', [OrderController::class, 'show'])->name('account.orders.show');
+    Route::post('/account/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('account.orders.cancel');
 
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
@@ -48,6 +50,7 @@ Route::middleware('auth')->group(function () {
 // โซนแอดมิน (ต้องเป็นสมาชิก + is_admin=true)
 Route::prefix('admin')->middleware(['auth','admin'])->as('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::resource('products', ProductController::class)->except(['show'])->names('products');
     Route::resource('categories', CategoryController::class)->except(['show'])->names('categories');
 

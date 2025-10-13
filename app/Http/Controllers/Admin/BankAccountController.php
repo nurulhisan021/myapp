@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BankAccount;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class BankAccountController extends Controller
@@ -24,18 +25,25 @@ class BankAccountController extends Controller
      */
     public function update(Request $request)
     {
-        $bankAccount = BankAccount::firstOrCreate([]);
-
-        $data = $request->validate([
+        $rules = [
             'bank_name' => 'required|string|max:255',
             'account_name' => 'required|string|max:255',
             'account_number' => 'required|string|max:255',
             'is_active' => 'nullable|boolean',
-            'qr_code' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:1024',
             'remove_qr_code' => 'nullable|boolean',
-        ]);
+        ];
+
+        if ($request->hasFile('qr_code')) {
+            $rules['qr_code'] = 'image|mimes:jpg,jpeg,png,webp|max:1024';
+        }
+
+        $data = $request->validate($rules);
         $data['is_active'] = $request->has('is_active');
 
+        // Find the single record, or prepare to create it.
+        $bankAccount = BankAccount::firstOrNew([]);
+
+        // Handle file upload before saving data
         $oldQrCode = $bankAccount->qr_code_path;
         $removeQrCode = $request->has('remove_qr_code');
 
@@ -45,8 +53,11 @@ class BankAccountController extends Controller
             $data['qr_code_path'] = null;
         }
 
-        $bankAccount->update($data);
+        // Update or Create the record with all data at once.
+        $bankAccount->fill($data);
+        $bankAccount->save();
 
+        // Clean up old file if needed
         if (($request->hasFile('qr_code') || $removeQrCode) && $oldQrCode && Storage::disk('public')->exists($oldQrCode)) {
             Storage::disk('public')->delete($oldQrCode);
         }

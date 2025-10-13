@@ -75,12 +75,19 @@
         </div>
 
         <div class="bg-white border rounded-lg shadow-sm p-4">
-            <h2 class="text-lg font-semibold mb-2">ข้อมูลลูกค้า</h2>
+            <h2 class="text-lg font-semibold mb-2">ข้อมูลลูกค้าและการจัดส่ง</h2>
             <dl class="space-y-1 text-sm">
-                <dt class="font-semibold">ชื่อ:</dt>
-                <dd class="ml-4">{{ $order->user->name }}</dd>
-                <dt class="font-semibold mt-2">อีเมล:</dt>
-                <dd class="ml-4">{{ $order->user->email }}</dd>
+                <dt class="font-semibold">ชื่อลูกค้า:</dt>
+                <dd class="ml-4">{{ $order->user->name }} ({{ $order->user->email }})</dd>
+                
+                <dt class="font-semibold pt-2 mt-2 border-t">ชื่อผู้รับ:</dt>
+                <dd class="ml-4">{{ $order->shipping_name }}</dd>
+                
+                <dt class="font-semibold mt-2">ที่อยู่จัดส่ง:</dt>
+                <dd class="ml-4 whitespace-pre-wrap">{{ $order->shipping_address }}</dd>
+                
+                <dt class="font-semibold mt-2">เบอร์โทรศัพท์:</dt>
+                <dd class="ml-4">{{ $order->shipping_phone }}</dd>
             </dl>
         </div>
 
@@ -95,17 +102,7 @@
             @endif
         </div>
 
-        <div class="bg-white border rounded-lg shadow-sm p-4">
-            <h2 class="text-lg font-semibold mb-2">ข้อมูลการจัดส่ง</h2>
-            <dl class="space-y-1 text-sm">
-                <dt class="font-semibold">ชื่อผู้รับ:</dt>
-                <dd class="ml-4">{{ $order->shipping_name }}</dd>
-                <dt class="font-semibold mt-2">ที่อยู่:</dt>
-                <dd class="ml-4 whitespace-pre-wrap">{{ $order->shipping_address }}</dd>
-                <dt class="font-semibold mt-2">เบอร์โทรศัพท์:</dt>
-                <dd class="ml-4">{{ $order->shipping_phone }}</dd>
-            </dl>
-        </div>
+
     </div>
 </div>
 @endsection

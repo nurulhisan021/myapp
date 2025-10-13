@@ -18,7 +18,7 @@
                 </div>
                 @if($bankAccount->qr_code_url)
                 <div class="mt-4 pt-4 border-t text-center">
-                    <img src="{{ $bankAccount->qr_code_url }}" alt="QR Code" class="w-32 h-32 mx-auto rounded-lg border p-1 bg-white">
+                    <img src="{{ $bankAccount->qr_code_url }}" alt="QR Code" class="w-70 h-80 mx-auto rounded-lg border p-1 bg-white">
                     <p class="text-xs text-gray-500 mt-1">สแกน QR เพื่อชำระเงิน</p>
                 </div>
                 @endif

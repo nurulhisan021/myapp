@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
-    protected $fillable = ['name','category_id','price','description','image'];
+    protected $fillable = ['name','category_id','price','stock','description','image'];
 
     public function category()
     {

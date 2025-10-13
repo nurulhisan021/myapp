@@ -23,6 +23,7 @@
                 <th class="p-4">สินค้า</th>
                 <th class="p-4">หมวดหมู่</th>
                 <th class="p-4">ราคา</th>
+                <th class="p-4">สต็อก</th>
                 <th class="p-4">วันที่สร้าง</th>
                 <th class="p-4">จัดการ</th>
             </tr>
@@ -39,6 +40,7 @@
                     </td>
                     <td class="p-4">{{ $product->category->name ?? '-' }}</td>
                     <td class="p-4">฿{{ number_format($product->price, 2) }}</td>
+                    <td class="p-4">{{ $product->stock }}</td>
                     <td class="p-4">{{ $product->created_at->format('d/m/Y') }}</td>
                     <td class="p-4 flex gap-2">
                         <a href="{{ route('admin.products.edit', $product) }}" class="text-blue-600 hover:underline">แก้ไข</a>

@@ -20,7 +20,7 @@
 @endif
 
 <div class="max-w-lg bg-white border rounded-lg shadow-sm p-6">
-    <form action="{{ route('admin.bank-account.update') }}" method="POST" class="space-y-4">
+    <form action="{{ route('admin.bank-account.update') }}" method="POST" class="space-y-4" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div>

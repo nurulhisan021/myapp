@@ -49,11 +49,19 @@ class CheckoutController extends Controller
         try {
             DB::beginTransaction();
 
-            $slipPath = $request->file('payment_slip')->store('slips', 'public');
-
-            // Eager load products to get details
             $productIds = array_keys($cart);
-            $products = Product::find($productIds);
+            $products = Product::whereIn('id', $productIds)->get();
+
+            // Final stock check before creating order
+            foreach ($products as $product) {
+                $qtyInCart = $cart[$product->id]['qty'];
+                if ($product->stock < $qtyInCart) {
+                    DB::rollBack();
+                    return redirect()->route('cart.index')->with('error', 'สินค้า \'' . $product->name . '\' มีในสต็อกไม่เพียงพอ (เหลือ: ' . $product->stock . ' ชิ้น) กรุณาปรับจำนวนในตะกร้า');
+                }
+            }
+
+            $slipPath = $request->file('payment_slip')->store('slips', 'public');
 
             $total = 0;
             foreach ($products as $product) {
@@ -76,6 +84,9 @@ class CheckoutController extends Controller
                     'quantity' => $cart[$product->id]['qty'],
                     'price' => $product->price, // Price at time of purchase
                 ]);
+
+                // Decrement stock
+                $product->decrement('stock', $cart[$product->id]['qty']);
             }
 
             DB::commit();

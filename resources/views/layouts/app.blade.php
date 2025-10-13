@@ -71,7 +71,7 @@
                   แอดมิน
                 </a>
               @endif
-              <a href="{{ route('account.orders.index') }}" class="text-sm hover:text-brand">บัญชีของฉัน</a>
+              <a href="{{ route('account.orders.index') }}" class="text-sm hover:text-brand">บัญชีของ: {{ auth()->user()->name }}</a>
               <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 text-sm">ออกจากระบบ</button>
@@ -109,7 +109,7 @@
               @if(auth()->user()->is_admin)
                 <a href="{{ route('admin.dashboard') }}" class="hover:text-brand">แอดมิน</a>
               @endif
-              <a href="{{ route('account.orders.index') }}" class="hover:text-brand">บัญชีของฉัน</a>
+              <a href="{{ route('account.orders.index') }}" class="hover:text-brand">บัญชีของฉัน: {{ auth()->user()->name }}</a>
               <form action="{{ route('logout') }}" method="POST" class="pt-2 border-t">
                 @csrf
                 <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 w-full text-left">ออกจากระบบ</button>

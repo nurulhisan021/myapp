@@ -39,7 +39,7 @@
                 <tr class="border-b hover:bg-gray-50">
                     <td class="p-4">{{ $orders->firstItem() + $loop->index }}</td>
                     <td class="p-4">{{ $order->user->name }}</td>
-                    <td class="p-4">{{ $order->created_at->format('d/m/Y') }}</td>
+                    <td class="p-4">{{ $order->created_at->format('d/m/Y H:i') }}</td>
                     <td class="p-4">
                         <span class="px-2 py-1 rounded-full text-xs font-medium
                             @switch($order->status)
