@@ -139,87 +139,74 @@
 </script>
 
 {{-- ===== หมวดหมู่ ===== --}}
+@if(isset($categories) && $categories->isNotEmpty())
 <section class="relative w-screen left-1/2 -translate-x-1/2 mb-12">
   <div class="w-full px-4 sm:px-6 lg:px-10">
-    <h2 class="text-xl font-semibold mb-4">หมวดหมู่ยอดนิยม</h2>
+    <h2 class="text-xl font-semibold mb-4">เลือกซื้อตามหมวดหมู่</h2>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-      <a href="{{ route('products.index', ['q' => 'ครีม']) }}"
-         class="group relative overflow-hidden rounded-2xl border bg-white">
-        <div class="w-full aspect-[4/3] md:aspect-[16/9] bg-gradient-to-tr from-rose-100 to-pink-50"></div>
-        <div class="absolute inset-0 flex items-end p-4">
-          <span class="px-3 py-1.5 rounded-lg bg-white/90 group-hover:bg-white text-pink-600 font-medium">
-            สกินแคร์
-          </span>
-        </div>
-      </a>
-
-      <a href="{{ route('products.index', ['q' => 'ลิป']) }}"
-         class="group relative overflow-hidden rounded-2xl border bg-white">
-        <div class="w-full aspect-[4/3] md:aspect-[16/9] bg-gradient-to-tr from-pink-100 to-rose-50"></div>
-        <div class="absolute inset-0 flex items-end p-4">
-          <span class="px-3 py-1.5 rounded-lg bg-white/90 text-pink-600 font-medium">
-            เมคอัพ (ลิป/บลัช)
-          </span>
-        </div>
-      </a>
-
-      <a href="{{ route('products.index', ['q' => 'กันแดด']) }}"
-         class="group relative overflow-hidden rounded-2xl border bg-white">
-        <div class="w-full aspect-[4/3] md:aspect-[16/9] bg-gradient-to-tr from-fuchsia-100 to-pink-50"></div>
-        <div class="absolute inset-0 flex items-end p-4">
-          <span class="px-3 py-1.5 rounded-lg bg-white/90 text-pink-600 font-medium">
-            กันแดด
-          </span>
-        </div>
-      </a>
-
-      {{-- เติมการ์ดหมวดหมู่เพิ่มได้ตามต้องการ --}}
+    <div class="flex items-center gap-6 border-b">
+        <a href="{{ route('shop.home') }}" 
+           class="px-1 py-4 font-semibold transition whitespace-nowrap {{ !$selectedCategory ? 'text-brand border-b-2 border-brand' : 'text-gray-500 hover:text-brand' }}">
+            ทั้งหมด
+        </a>
+        @foreach ($categories as $category)
+            <a href="{{ route('shop.home', ['category_id' => $category->id]) }}" 
+               class="px-3 py-4 font-semibold transition whitespace-nowrap {{ ($selectedCategory && $selectedCategory->id == $category->id) ? 'text-brand border-b-2 border-brand' : 'text-gray-500 hover:text-brand' }}">
+                {{ $category->name }}
+            </a>
+        @endforeach
     </div>
   </div>
 </section>
+@endif
 
 
 {{-- ===== สินค้ายอดนิยม ===== --}}
+@if(isset($featured) && $featured->isNotEmpty())
 <section class="relative w-screen left-1/2 -translate-x-1/2 mb-16">
   <div class="w-full px-4 sm:px-6 lg:px-10">
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-xl font-semibold">สินค้ายอดนิยม</h2>
-      <a href="{{ route('products.index') }}" class="text-sm text-gray-600 hover:underline">ดูทั้งหมด →</a>
+      <h2 class="text-xl font-semibold">
+        @if($selectedCategory)
+            สินค้าในหมวดหมู่: {{ $selectedCategory->name }}
+        @else
+            สินค้าล่าสุด
+        @endif
+      </h2>
     </div>
 
-    @if($featured->isEmpty())
-      <div class="bg-white border rounded-xl p-6 text-gray-500">
-        ยังไม่มีสินค้า ลองเพิ่มสินค้าที่หน้าแอดมินก่อนนะคะ
-      </div>
-    @else
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        @foreach($featured as $p)
-          <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
-            <a href="{{ route('products.show',$p) }}">
-              <img src="{{ $p->image_url }}" alt="{{ $p->name }}" class="w-full h-48 object-cover">
-            </a>
-            <div class="p-4">
-              <a href="{{ route('products.show',$p) }}" class="font-medium block truncate">{{ $p->name }}</a>
-              <p class="text-pink-600 font-semibold mt-1">{{ number_format($p->price,2) }} บาท</p>
-              <p class="text-sm text-gray-500 mt-2 truncate">{{ $p->description }}</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      @foreach($featured as $p)
+        <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+          <a href="{{ route('products.show',$p) }}">
+            <img src="{{ $p->image_url }}" alt="{{ $p->name }}" class="w-full h-48 object-cover">
+          </a>
+          <div class="p-4">
+            <a href="{{ route('products.show',$p) }}" class="font-medium block truncate">{{ $p->name }}</a>
+            <p class="text-pink-600 font-semibold mt-1">{{ number_format($p->price,2) }} บาท</p>
+            <p class="text-sm text-gray-500 mt-2 truncate">{{ $p->description }}</p>
 
-              <form action="{{ route('cart.add') }}" method="POST" class="mt-3 flex items-center gap-2">
-                @csrf
-                <input type="hidden" name="product_id" value="{{ $p->id }}">
-                <input type="number" name="qty" value="1" min="1"
-                       class="w-16 rounded-lg border-gray-300 text-center">
-                <button class="px-3 py-1.5 rounded-lg bg-pink-600 text-white hover:bg-pink-700">
-                  🛒 ใส่ตะกร้า
-                </button>
-                <a href="{{ route('cart.index') }}" class="text-sm text-gray-600 underline">ดูตะกร้า</a>
-              </form>
-            </div>
+            @auth
+                <form action="{{ route('cart.add') }}" method="POST" class="mt-3 flex items-center gap-2">
+                  @csrf
+                  <input type="hidden" name="product_id" value="{{ $p->id }}">
+                  <input type="number" name="qty" value="1" min="1"
+                         class="w-16 rounded-lg border-gray-300 text-center">
+                  <button class="px-3 py-1.5 rounded-lg bg-pink-600 text-white hover:bg-pink-700">
+                    🛒 ใส่ตะกร้า
+                  </button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" class="mt-3 block w-full text-center px-3 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">
+                    เข้าสู่ระบบเพื่อสั่งซื้อ
+                </a>
+            @endauth
           </div>
-        @endforeach
-      </div>
-    @endif
+        </div>
+      @endforeach
+    </div>
   </div>
 </section>
+@endif
 
 @endsection

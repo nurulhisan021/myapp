@@ -10,13 +10,14 @@ class AdminOnly
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!session('is_admin')) {
-            return redirect()->route('admin.login')
-                ->with('error', 'กรุณาเข้าสู่ระบบแอดมิน');
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'กรุณาเข้าสู่ระบบ');
         }
+
         if (!Auth::user()->is_admin) {
             return redirect()->route('shop.home')->with('error', 'ต้องเป็นแอดมินเท่านั้น');
         }
+
         return $next($request);
     }
 }

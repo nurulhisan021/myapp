@@ -14,7 +14,7 @@ class AuthController extends Controller
         if (Auth::check()) {
             return Auth::user()->is_admin
                 ? redirect()->route('admin.dashboard')
-                : redirect()->route('account.home');
+                : redirect()->route('account.orders.index');
         }
         return view('auth.login');
     }
@@ -34,14 +34,14 @@ class AuthController extends Controller
 
             return Auth::user()->is_admin
                 ? redirect()->intended(route('admin.dashboard'))->with('ok','ยินดีต้อนรับแอดมิน')
-                : redirect()->intended(route('account.home'))->with('ok','เข้าสู่ระบบสำเร็จ');
+                : redirect()->intended(route('shop.home'))->with('ok','เข้าสู่ระบบสำเร็จ');
         }
         return back()->withErrors(['email'=>'อีเมลหรือรหัสผ่านไม่ถูกต้อง'])->onlyInput('email');
     }
 
     public function showRegister()
     {
-        if (Auth::check()) return redirect()->route('account.home');
+        if (Auth::check()) return redirect()->route('account.orders.index');
         return view('auth.register');
     }
 
@@ -60,10 +60,8 @@ class AuthController extends Controller
             'is_admin' => false, // ลูกค้าปกติ
         ]);
 
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        return redirect()->route('account.home')->with('ok','สมัครสมาชิกสำเร็จ');
+        // No automatic login, redirect to login page with a success message
+        return redirect()->route('login')->with('ok', 'สมัครสมาชิกสำเร็จแล้ว! กรุณาเข้าสู่ระบบ');
     }
 
     public function logout(Request $request)

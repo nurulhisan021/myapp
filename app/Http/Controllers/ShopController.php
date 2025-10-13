@@ -3,13 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
+use Illuminate\Http\Request;
 
 class ShopController extends Controller
 {
-    public function home()
+    public function home(Request $request)
     {
-        // เอาสินค้าล่าสุด 6 ชิ้นมาโชว์เป็น “ยอดนิยม”
-        $featured = Product::orderByDesc('id')->take(6)->get();
-        return view('shop.home', compact('featured'));
+        $categories = Category::all();
+        $selectedCategory = null;
+
+        $productQuery = Product::query();
+
+        if ($request->filled('category_id')) {
+            $selectedCategory = Category::find($request->category_id);
+            if ($selectedCategory) {
+                $productQuery->where('category_id', $selectedCategory->id);
+            }
+            $products = $productQuery->latest()->get();
+        } else {
+            // Default: show latest 6 products
+            $products = $productQuery->latest()->take(6)->get();
+        }
+
+        return view('shop.home', [
+            'featured' => $products, // Rename to featured for view compatibility
+            'categories' => $categories,
+            'selectedCategory' => $selectedCategory,
+        ]);
     }
 }

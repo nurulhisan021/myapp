@@ -30,22 +30,31 @@
         <p class="text-brand font-semibold mt-1">{{ number_format($p->price,2) }} บาท</p>
         <p class="text-sm text-gray-500 mt-2 line-clamp-2">{{ $p->description }}</p>
 
-        @if(session('is_admin'))
-          <div class="flex items-center gap-2 mt-3">
-            <a href="{{ route('admin.products.edit',$p) }}" class="px-3 py-1.5 rounded-lg border hover:bg-gray-50">แก้ไข</a>
-            <form action="{{ route('admin.products.destroy',$p) }}" method="POST" onsubmit="return confirm('ยืนยันลบ?')" class="inline">
-              @csrf @method('DELETE')
-              <button class="px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700">ลบ</button>
-            </form>
-          </div>
+        @auth
+            @if(auth()->user()->is_admin)
+                {{-- Admin Buttons --}}
+                <div class="flex items-center gap-2 mt-3">
+                    <a href="{{ route('admin.products.edit', $p) }}" class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 text-sm">แก้ไข</a>
+                    <form action="{{ route('admin.products.destroy', $p) }}" method="POST" onsubmit="return confirm('ยืนยันลบ?')">
+                        @csrf @method('DELETE')
+                        <button class="px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">ลบ</button>
+                    </form>
+                </div>
+            @else
+                {{-- Logged-in User "Add to Cart" Form --}}
+                <form action="{{ route('cart.add') }}" method="POST" class="mt-3 flex items-center gap-2">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $p->id }}">
+                    <input type="number" name="qty" value="1" min="1" class="w-16 rounded-lg border-gray-300 text-center">
+                    <button class="px-3 py-1.5 rounded-lg bg-brand text-white hover:bg-brand-dark">🛒 ใส่ตะกร้า</button>
+                </form>
+            @endif
         @else
-          <form action="{{ route('cart.add') }}" method="POST" class="mt-3 flex items-center gap-2">
-            @csrf
-            <input type="hidden" name="product_id" value="{{ $p->id }}">
-            <input type="number" name="qty" value="1" min="1" class="w-16 rounded-lg border-gray-300 text-center">
-            <button class="px-3 py-1.5 rounded-lg bg-brand text-white hover:bg-brand-dark">🛒 ใส่ตะกร้า</button>
-          </form>
-        @endif
+            {{-- Guest "Login" Button --}}
+            <a href="{{ route('login') }}" class="mt-3 block w-full text-center px-3 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">
+                เข้าสู่ระบบเพื่อสั่งซื้อ
+            </a>
+        @endauth
       </div>
     </div>
   @empty

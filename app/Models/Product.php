@@ -7,7 +7,17 @@ use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
-    protected $fillable = ['name','category','price','description','image'];
+    protected $fillable = ['name','category_id','price','description','image'];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 
     protected $casts = [
         'price' => 'decimal:2',

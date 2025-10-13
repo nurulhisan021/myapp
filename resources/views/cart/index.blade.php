@@ -2,48 +2,57 @@
 @section('title','ตะกร้าสินค้า')
 
 @section('content')
-<h1 class="text-2xl font-semibold mb-4">ตะกร้าสินค้า</h1>
+<h1 class="text-2xl font-bold mb-6">ตะกร้าสินค้า</h1>
 
-@if(empty($cart) || collect($cart)->isEmpty())
-  <div class="rounded-xl border bg-white p-6 text-gray-500">ตะกร้ายังว่างเปล่า</div>
+@if(empty($cart))
+  <div class="rounded-xl border bg-white p-6 text-center text-gray-500">
+    <p>ตะกร้าของคุณยังว่างเปล่า</p>
+    <a href="{{ route('products.index') }}" class="mt-4 inline-block px-5 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark">เลือกซื้อสินค้า</a>
+    </div>
 @else
   <div class="rounded-2xl border bg-white overflow-hidden">
     <table class="w-full text-left">
       <thead class="bg-gray-50 text-gray-600 text-sm">
         <tr>
-          <th class="px-4 py-3">สินค้า</th>
-          <th class="px-4 py-3 w-32">ราคา</th>
-          <th class="px-4 py-3 w-40">จำนวน</th>
-          <th class="px-4 py-3 w-32">รวม</th>
-          <th class="px-4 py-3 w-24"></th>
+          <th class="p-4">สินค้า</th>
+          <th class="p-4 w-32">ราคา</th>
+          <th class="p-4 w-40">จำนวน</th>
+          <th class="p-4 w-32 text-right">รวม</th>
+          <th class="p-4 w-24"></th>
         </tr>
       </thead>
       <tbody class="divide-y">
-        @php $sum = 0; @endphp
-        @foreach($cart as $item)
-          @php $total = $item['qty'] * $item['price']; $sum += $total; @endphp
+        @foreach($products as $product)
+          @php
+            $qty = $cart[$product->id]['qty'];
+            $lineTotal = $qty * $product->price;
+          @endphp
           <tr class="align-middle">
-            <td class="px-4 py-3">
-              <div class="flex items-center gap-3">
-                <img src="{{ $item['image_url'] ?? asset('images/product-placeholder.png') }}" class="w-12 h-12 rounded object-cover">
-                <div class="font-medium">{{ $item['name'] }}</div>
+            <td class="p-4">
+              <div class="flex items-center gap-4">
+                <a href="{{ route('products.show', $product) }}">
+                    <img src="{{ $product->image_url }}" class="w-16 h-16 rounded object-cover border">
+                </a>
+                <div>
+                    <a href="{{ route('products.show', $product) }}" class="font-medium hover:text-brand">{{ $product->name }}</a>
+                    <p class="text-sm text-gray-500">{{ $product->category->name ?? '' }}</p>
+                </div>
               </div>
             </td>
-            <td class="px-4 py-3">{{ number_format($item['price'],2) }}</td>
-            <td class="px-4 py-3">
-              <form action="{{ route('cart.update',$item['id']) }}" method="POST" class="flex items-center gap-2">
+            <td class="p-4">฿{{ number_format($product->price, 2) }}</td>
+            <td class="p-4">
+              <form action="{{ route('cart.update', $product->id) }}" method="POST">
                 @csrf
-                <input type="number" name="qty" value="{{ $item['qty'] }}" min="1"
-                       class="w-20 rounded-lg border-gray-300 text-center">
-                <button class="px-3 py-1.5 rounded-lg border hover:bg-gray-50">อัปเดต</button>
+                <input type="number" name="qty" value="{{ $qty }}" min="0" 
+                       onchange="this.form.submit()"
+                       class="w-24 rounded-lg border-gray-300 text-center focus:ring-brand focus:border-brand">
               </form>
             </td>
-            <td class="px-4 py-3 font-semibold">{{ number_format($total,2) }}</td>
-            <td class="px-4 py-3">
-              <form action="{{ route('cart.remove',$item['id']) }}" method="POST"
-                    onsubmit="return confirm('เอาออกจากตะกร้า?')">
+            <td class="p-4 font-semibold text-right">฿{{ number_format($lineTotal, 2) }}</td>
+            <td class="p-4 text-center">
+              <form action="{{ route('cart.remove', $product->id) }}" method="POST" onsubmit="return confirm('นำสินค้านี้ออกจากตะกร้า?')">
                 @csrf @method('DELETE')
-                <button class="px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700">ลบ</button>
+                <button class="text-red-500 hover:text-red-700 font-bold text-xl">×</button>
               </form>
             </td>
           </tr>
@@ -52,14 +61,19 @@
     </table>
   </div>
 
-  <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
-    <form action="{{ route('cart.clear') }}" method="POST" onsubmit="return confirm('ลบทั้งหมด?')">
+  <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <form action="{{ route('cart.clear') }}" method="POST" onsubmit="return confirm('คุณต้องการล้างตะกร้าสินค้าทั้งหมดใช่หรือไม่?')">
       @csrf @method('DELETE')
-      <button class="px-4 py-2 rounded-lg border hover:bg-gray-50">ล้างตะกร้า</button>
+      <button class="px-4 py-2 rounded-lg border hover:bg-gray-100 text-sm text-gray-600">ล้างตะกร้าทั้งหมด</button>
     </form>
-    <div class="text-right">
-      <div class="text-gray-600">ยอดรวม</div>
-      <div class="text-2xl font-bold text-brand">{{ number_format($sum,2) }} บาท</div>
+    <div class="flex items-center gap-4">
+      <div class="text-right">
+        <div class="text-gray-600">ยอดรวมทั้งสิ้น</div>
+        <div class="text-2xl font-bold text-brand">฿{{ number_format($total, 2) }}</div>
+      </div>
+      <a href="{{ route('checkout.index') }}" class="px-6 py-3 rounded-xl bg-brand text-white font-bold hover:bg-brand-dark">
+        สั่งซื้อและชำระเงิน
+      </a>
     </div>
   </div>
 @endif

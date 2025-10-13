@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('admin.layout')
 @section('title','แดชบอร์ดแอดมิน')
 
-@section('content')
+@section('admin_content')
 <div class="max-w-5xl mx-auto">
   <h1 class="text-2xl font-bold mb-6">แดชบอร์ดแอดมิน</h1>
 

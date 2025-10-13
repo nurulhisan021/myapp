@@ -11,23 +11,14 @@ class CartController extends Controller
     public function index()
     {
         $cart = session('cart', []);
-        $items = [];
-        $subtotal = 0;
+        $total = 0;
+        $products = Product::whereIn('id', array_keys($cart))->get();
 
-        foreach ($cart as $pid => $row) {
-            $line = (float)$row['price'] * (int)$row['qty'];
-            $subtotal += $line;
-            $items[] = [
-                'id'    => $pid,
-                'name'  => $row['name'],
-                'price' => (float)$row['price'],
-                'qty'   => (int)$row['qty'],
-                'image' => $row['image'] ?? null,
-                'line'  => $line,
-            ];
+        foreach($products as $product) {
+            $total += $product->price * $cart[$product->id]['qty'];
         }
 
-        return view('cart.index', compact('items','subtotal'));
+        return view('cart.index', compact('cart', 'products', 'total'));
     }
 
     // เพิ่มสินค้าเข้าตะกร้า
@@ -38,8 +29,8 @@ class CartController extends Controller
             'qty'        => 'nullable|integer|min:1',
         ]);
 
-        $qty = $data['qty'] ?? 1;
         $product = Product::findOrFail($data['product_id']);
+        $qty = $data['qty'] ?? 1;
 
         $cart = session('cart', []);
 
@@ -47,16 +38,13 @@ class CartController extends Controller
             $cart[$product->id]['qty'] += $qty;
         } else {
             $cart[$product->id] = [
-                'name'  => $product->name,
-                'price' => (float)$product->price,
                 'qty'   => $qty,
-                'image' => $product->image, // ถ้าฟิลด์ชื่ออื่น แก้ให้ตรง
             ];
         }
 
         session(['cart' => $cart]);
 
-        return back()->with('ok', 'เพิ่มลงตะกร้าแล้ว');
+        return back()->with('ok', 'เพิ่ม \'' . $product->name . '\' ลงตะกร้าแล้ว');
     }
 
     public function update(Request $request, Product $product)
@@ -66,17 +54,20 @@ class CartController extends Controller
         if (!isset($cart[$product->id])) {
             return back()->with('error','ไม่พบสินค้าในตะกร้า');
         }
-        if ($data['qty'] === 0) unset($cart[$product->id]);
-        else $cart[$product->id]['qty'] = $data['qty'];
+
+        if ($data['qty'] == 0) {
+            unset($cart[$product->id]);
+        } else {
+            $cart[$product->id]['qty'] = $data['qty'];
+        }
+        
         session(['cart' => $cart]);
         return back()->with('ok','อัปเดตจำนวนแล้ว');
     }
 
     public function remove(Product $product)
     {
-        $cart = session('cart', []);
-        unset($cart[$product->id]);
-        session(['cart' => $cart]);
+        session()->forget('cart.' . $product->id);
         return back()->with('ok','ลบรายการแล้ว');
     }
 

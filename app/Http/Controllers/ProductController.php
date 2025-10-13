@@ -3,21 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $q = request('q');
+        // Admin route
+        if ($request->routeIs('admin.*')) {
+            $products = Product::with('category')->orderByDesc('id')->paginate(15);
+            return view('admin.products.index', compact('products'));
+        }
 
-        $products = Product::query()
-            ->when($q, function ($qb) use ($q) {
-                $qb->where(function ($qq) use ($q) {
-                    $qq->where('name', 'like', "%{$q}%")
-                       ->orWhere('category', 'like', "%{$q}%");
-                });
+        // Public route
+        $q = $request->input('q');
+
+        $products = Product::with('category') // Eager load category
+            ->when($q, function ($query) use ($q) {
+                $query->where('name', 'like', "%{$q}%")
+                      ->orWhereHas('category', function ($catQuery) use ($q) {
+                          $catQuery->where('name', 'like', "%{$q}%");
+                      });
             })
             ->orderByDesc('id')
             ->paginate(12)
@@ -28,14 +36,15 @@ class ProductController extends Controller
 
     public function create()
     {
-        return view('products.create');
+        $categories = Category::orderBy('name')->get();
+        return view('products.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
             'name'        => 'required|string|max:150',
-            'category'    => 'nullable|string|max:50',
+            'category_id' => 'nullable|exists:categories,id',
             'price'       => 'required|numeric|min:0',
             'description' => 'nullable|string',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
@@ -47,9 +56,7 @@ class ProductController extends Controller
 
         Product::create($data);
 
-        // มาจาก admin → กลับแดชบอร์ด /admin
-        $to = $request->routeIs('admin.*') ? 'admin.dashboard' : 'products.index';
-        return redirect()->route($to)->with('ok', 'เพิ่มสินค้าแล้ว');
+        return redirect()->route('admin.products.index')->with('success', 'เพิ่มสินค้าแล้ว');
     }
 
     public function show(Product $product)
@@ -59,14 +66,15 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        return view('products.edit', compact('product'));
+        $categories = Category::orderBy('name')->get();
+        return view('products.edit', compact('product', 'categories'));
     }
 
     public function update(Request $request, Product $product)
     {
         $data = $request->validate([
             'name'         => 'required|string|max:150',
-            'category'     => 'nullable|string|max:50',
+            'category_id'  => 'nullable|exists:categories,id',
             'price'        => 'required|numeric|min:0',
             'description'  => 'nullable|string',
             'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
@@ -88,8 +96,7 @@ class ProductController extends Controller
             Storage::disk('public')->delete($old);
         }
 
-        $to = $request->routeIs('admin.*') ? 'admin.dashboard' : 'products.index';
-        return redirect()->route($to)->with('ok', 'อัปเดตสินค้าแล้ว');
+        return redirect()->route('admin.products.index')->with('success', 'อัปเดตสินค้าแล้ว');
     }
 
     public function destroy(Product $product)
@@ -100,7 +107,6 @@ class ProductController extends Controller
 
         $product->delete();
 
-        $to = request()->routeIs('admin.*') ? 'admin.dashboard' : 'products.index';
-        return redirect()->route($to)->with('ok', 'ลบสินค้าแล้ว');
+        return redirect()->route('admin.products.index')->with('success', 'ลบสินค้าแล้ว');
     }
 }
