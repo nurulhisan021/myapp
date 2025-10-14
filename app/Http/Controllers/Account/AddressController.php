@@ -26,6 +26,11 @@ class AddressController extends Controller
         return view('account.addresses.create');
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'required|string',

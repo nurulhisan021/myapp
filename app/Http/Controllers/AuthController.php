@@ -36,9 +36,21 @@ class AuthController extends Controller
         if (Auth::attempt(['email'=>$cred['email'], 'password'=>$cred['password']], $remember)) {
             $request->session()->regenerate();
 
-            return Auth::user()->is_admin
-                ? redirect()->intended(route('admin.dashboard'))->with('ok','ยินดีต้อนรับแอดมิน')
-                : redirect()->intended(route('shop.home'))->with('ok','เข้าสู่ระบบสำเร็จ');
+            if (Auth::user()->is_admin) {
+                return redirect()->intended(route('admin.dashboard'))->with('ok','ยินดีต้อนรับแอดมิน');
+            }
+
+            // For regular users, check if the intended URL is an admin route.
+            $intendedUrl = session('url.intended', route('shop.home'));
+
+            // Check if the path of the intended URL starts with /admin
+            if (str_starts_with(parse_url($intendedUrl, PHP_URL_PATH), '/admin')) {
+                // If so, redirect to a default safe route for regular users
+                return redirect()->route('shop.home')->with('ok', 'เข้าสู่ระบบสำเร็จ');
+            }
+
+            // Otherwise, proceed to the intended URL
+            return redirect($intendedUrl)->with('ok', 'เข้าสู่ระบบสำเร็จ');
         }
         return back()->withErrors(['email'=>'อีเมลหรือรหัสผ่านไม่ถูกต้อง'])->onlyInput('email');
     }

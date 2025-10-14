@@ -111,7 +111,11 @@
               @if(auth()->user()->is_admin)
                 <a href="{{ route('admin.dashboard') }}" class="hover:text-brand">แอดมิน</a>
               @endif
-              <a href="{{ route('account.orders.index') }}" class="hover:text-brand">บัญชีของฉัน: {{ auth()->user()->name }}</a>
+              <div class="border-t pt-2">
+                  <p class="text-sm text-gray-500">บัญชีของฉัน: {{ auth()->user()->name }}</p>
+                  <a href="{{ route('account.orders.index') }}" class="hover:text-brand block py-1">ประวัติคำสั่งซื้อ</a>
+                  <a href="{{ route('account.addresses.index') }}" class="hover:text-brand block py-1">จัดการที่อยู่</a>
+              </div>
               <form action="{{ route('logout') }}" method="POST" class="pt-2 border-t">
                 @csrf
                 <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 w-full text-left">ออกจากระบบ</button>
