@@ -29,7 +29,18 @@ class CheckoutController extends Controller
 
         $bankAccount = BankAccount::where('is_active', true)->first();
 
-        return view('checkout.index', compact('cart', 'products', 'total', 'bankAccount'));
+        // Get recent 3 unique shipping addresses from user's past orders
+        $recentAddresses = Order::where('user_id', Auth::id())
+            ->whereNotNull('shipping_address')
+            ->select('shipping_name', 'shipping_address', 'shipping_phone')
+            ->latest()
+            ->get()
+            ->unique(function ($item) {
+                return $item['shipping_name'] . $item['shipping_address'] . $item['shipping_phone'];
+            })
+            ->take(3);
+
+        return view('checkout.index', compact('cart', 'products', 'total', 'bankAccount', 'recentAddresses'));
     }
 
     public function placeOrder(Request $request)

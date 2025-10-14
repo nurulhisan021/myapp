@@ -24,7 +24,13 @@ class OrderController extends Controller
         // Eager load items and their product details
         $order->load('items.product');
 
-        return view('account.orders.show', compact('order'));
+        // Get a list of product IDs that the user has reviewed
+        $reviewedProductIds = Auth::user()
+            ->reviews()
+            ->pluck('product_id')
+            ->toArray();
+
+        return view('account.orders.show', compact('order', 'reviewedProductIds'));
     }
 
     public function cancel(Order $order)

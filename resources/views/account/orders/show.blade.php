@@ -39,6 +39,30 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Review Section --}}
+            @if ($order->status == 'delivered')
+            <div class="bg-white border rounded-lg shadow-sm">
+                <h2 class="text-lg font-semibold p-4 border-b">ให้คะแนนและรีวิวสินค้า</h2>
+                <div class="divide-y">
+                    @foreach($order->items as $item)
+                        @if($item->product) {{-- Check if product exists --}}
+                        <div class="p-4 flex items-center justify-between gap-4">
+                            <p class="font-semibold">{{ $item->product->name }}</p>
+                            <div>
+                                @if(in_array($item->product->id, $reviewedProductIds))
+                                    <span class="text-sm text-gray-500">คุณรีวิวสินค้านี้แล้ว</span>
+                                    <a href="{{ route('products.show', $item->product_id) }}" class="ml-2 px-3 py-1 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 text-xs">ดูรีวิว</a>
+                                @else
+                                    <a href="{{ route('products.show', $item->product_id) }}" class="px-4 py-2 rounded-lg border text-sm font-medium hover:bg-gray-50">เขียนรีวิว</a>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+            @endif
         </div>
 
         {{-- Status & Info --}}

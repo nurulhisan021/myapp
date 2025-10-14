@@ -49,6 +49,23 @@
         {{-- Shipping Form --}}
         <div class="bg-white border rounded-lg shadow-sm p-6">
             <h2 class="text-lg font-semibold mb-4">2. กรอกข้อมูลจัดส่งและแนบสลิป</h2>
+
+            {{-- Recent Addresses --}}
+            @if($recentAddresses->isNotEmpty())
+            <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-700 mb-2">หรือเลือกที่อยู่จากคำสั่งซื้อล่าสุด:</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    @foreach($recentAddresses as $address)
+                        <button type="button" class="address-btn text-left w-full p-3 border rounded-lg hover:bg-gray-50 hover:border-brand text-xs">
+                            <span class="font-semibold">{{ $address->shipping_name }}</span>
+                            <p class="text-gray-600">{{ Str::limit($address->shipping_address, 50) }}</p>
+                            <span class="sr-only" data-name="{{ $address->shipping_name }}" data-address="{{ $address->shipping_address }}" data-phone="{{ $address->shipping_phone }}"></span>
+                        </button>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             <form action="{{ route('checkout.placeOrder') }}" method="POST" class="space-y-4" enctype="multipart/form-data">
                 @csrf
                 <div>
@@ -106,4 +123,25 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addressButtons = document.querySelectorAll('.address-btn');
+        
+        addressButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const dataContainer = this.querySelector('.sr-only');
+                const name = dataContainer.getAttribute('data-name');
+                const address = dataContainer.getAttribute('data-address');
+                const phone = dataContainer.getAttribute('data-phone');
+
+                document.getElementById('shipping_name').value = name;
+                document.getElementById('shipping_address').value = address;
+                document.getElementById('shipping_phone').value = phone;
+            });
+        });
+    });
+</script>
+@endpush
 @endsection

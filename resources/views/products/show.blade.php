@@ -51,4 +51,73 @@
     @endauth
   </div>
 </div>
+
+{{-- Reviews Section --}}
+<div class="mt-12">
+    <h2 class="text-2xl font-semibold mb-4">รีวิวสินค้า</h2>
+
+    {{-- Session Messages --}}
+    @if (session('success'))
+        <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">{{ session('success') }}</div>
+    @endif
+    @if (session('error'))
+        <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">{{ session('error') }}</div>
+    @endif
+
+    {{-- Review Form --}}
+    @if ($canReview)
+        <div class="bg-white border rounded-2xl p-6 mb-8">
+            <h3 class="text-lg font-semibold mb-3">เขียนรีวิวของคุณ</h3>
+            <form action="{{ route('reviews.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                
+                <div class="mb-3">
+                    <label for="rating" class="block mb-1 font-medium">คะแนน</label>
+                    <select name="rating" id="rating" class="w-full rounded-lg border-gray-300 focus:ring-brand focus:border-brand">
+                        <option value="5">5 ดาว - ยอดเยี่ยม</option>
+                        <option value="4">4 ดาว - ดี</option>
+                        <option value="3">3 ดาว - ปานกลาง</option>
+                        <option value="2">2 ดาว - พอใช้</option>
+                        <option value="1">1 ดาว - ต้องปรับปรุง</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="comment" class="block mb-1 font-medium">ความคิดเห็น</label>
+                    <textarea name="comment" id="comment" rows="4" class="w-full rounded-lg border-gray-300 focus:ring-brand focus:border-brand" required>{{ old('comment') }}</textarea>
+                </div>
+
+                <button type="submit" class="px-5 py-2 rounded-xl bg-brand text-white hover:bg-brand-dark">ส่งรีวิว</button>
+            </form>
+        </div>
+    @elseif(Auth::check() && $hasPurchased && $hasReviewed)
+         <div class="mb-8 p-4 bg-blue-100 text-blue-700 rounded-lg">คุณได้รีวิวสินค้านี้ไปแล้ว</div>
+    @endif
+
+
+    {{-- Existing Reviews --}}
+    <div class="space-y-6">
+        @forelse ($product->reviews as $review)
+            <div class="bg-white border rounded-2xl p-6">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="font-semibold">{{ $review->user->name }}</p>
+                        <p class="text-sm text-gray-500">{{ $review->created_at->diffForHumans() }}</p>
+                    </div>
+                    <div class="flex items-center gap-1 text-yellow-400">
+                        @for ($i = 0; $i < $review->rating; $i++)
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                        @endfor
+                    </div>
+                </div>
+                <p class="mt-3 text-gray-700">{{ $review->comment }}</p>
+            </div>
+        @empty
+            <div class="bg-white border rounded-2xl p-6 text-center text-gray-500">
+                ยังไม่มีรีวิวสำหรับสินค้านี้
+            </div>
+        @endforelse
+    </div>
+</div>
 @endsection

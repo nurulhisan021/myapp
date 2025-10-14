@@ -6,6 +6,9 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Order;
+use App\Models\Review;
 
 class ProductController extends Controller
 {
@@ -62,7 +65,30 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        return view('products.show', compact('product'));
+        $product->load('reviews.user');
+
+        $canReview = false;
+        $hasPurchased = false;
+        $hasReviewed = false;
+
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            $hasPurchased = Order::where('user_id', $user->id)
+                ->where('status', 'delivered')
+                ->whereHas('items', function ($query) use ($product) {
+                    $query->where('product_id', $product->id);
+                })
+                ->exists();
+
+            $hasReviewed = Review::where('user_id', $user->id)
+                ->where('product_id', $product->id)
+                ->exists();
+
+            $canReview = $hasPurchased && !$hasReviewed;
+        }
+
+        return view('products.show', compact('product', 'canReview', 'hasPurchased', 'hasReviewed'));
     }
 
     public function edit(Product $product)

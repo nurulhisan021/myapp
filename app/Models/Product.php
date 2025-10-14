@@ -19,6 +19,11 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
     protected $casts = [
         'price' => 'decimal:2',
     ];

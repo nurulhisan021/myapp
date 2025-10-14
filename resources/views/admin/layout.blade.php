@@ -27,10 +27,6 @@
          class="{{ request()->routeIs('admin.bank-account.index') ? 'text-brand font-bold' : '' }} hover:text-brand">
          จัดการบัญชีธนาคาร
       </a>
-      <a href="{{ route('admin.reports.index') }}"
-         class="{{ request()->routeIs('admin.reports.index') ? 'text-brand font-bold' : '' }} hover:text-brand">
-         รายงาน
-      </a>
       {{-- Links for future features can be added here --}}
     </nav>
   </aside>

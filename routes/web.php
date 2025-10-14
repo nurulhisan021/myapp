@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\BankAccountController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\ReviewController;
 
 // หน้าแรก (ช็อป)
 Route::get('/', [ShopController::class, 'home'])->name('shop.home');
@@ -45,12 +46,14 @@ Route::middleware('auth')->group(function () {
     // Checkout
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
+
+    // Reviews
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 });
 
 // โซนแอดมิน (ต้องเป็นสมาชิก + is_admin=true)
 Route::prefix('admin')->middleware(['auth','admin'])->as('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::resource('products', ProductController::class)->except(['show'])->names('products');
     Route::resource('categories', CategoryController::class)->except(['show'])->names('categories');
 
