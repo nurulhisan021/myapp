@@ -15,6 +15,13 @@ class ReviewController extends Controller
             'product_id' => 'required|exists:products,id',
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'required|string',
+        ], [
+            'rating.required' => 'กรุณาให้คะแนนสินค้า',
+            'rating.integer' => 'คะแนนต้องเป็นตัวเลข',
+            'rating.min' => 'คะแนนต้องมีค่าอย่างน้อย 1',
+            'rating.max' => 'คะแนนต้องมีค่าไม่เกิน 5',
+            'comment.required' => 'กรุณากรอกความคิดเห็น',
+            'comment.string' => 'ความคิดเห็นต้องเป็นข้อความ',
         ]);
 
         $product_id = $request->input('product_id');

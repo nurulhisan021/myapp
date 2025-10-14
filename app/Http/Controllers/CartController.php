@@ -27,6 +27,9 @@ class CartController extends Controller
         $data = $request->validate([
             'product_id' => 'required|integer|exists:products,id',
             'qty'        => 'nullable|integer|min:1',
+        ], [
+            'qty.integer' => 'จำนวนต้องเป็นตัวเลข',
+            'qty.min' => 'จำนวนต้องมีค่าอย่างน้อย 1',
         ]);
 
         $product = Product::findOrFail($data['product_id']);
@@ -55,7 +58,11 @@ class CartController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $data = $request->validate(['qty' => 'required|integer|min:0']);
+        $data = $request->validate(['qty' => 'required|integer|min:0'], [
+            'qty.required' => 'กรุณากรอกจำนวน',
+            'qty.integer' => 'จำนวนต้องเป็นตัวเลข',
+            'qty.min' => 'จำนวนต้องไม่ติดลบ',
+        ]);
         $cart = session('cart', []);
         if (!isset($cart[$product->id])) {
             return back()->with('error','ไม่พบสินค้าในตะกร้า');

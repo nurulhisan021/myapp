@@ -22,7 +22,8 @@
 @endif
 
 <div class="bg-white border rounded-lg shadow-sm">
-    <table class="w-full text-left">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left min-w-[600px]">
         <thead class="border-b">
             <tr>
                 <th class="p-4">#</th>

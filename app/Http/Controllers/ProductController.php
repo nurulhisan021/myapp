@@ -16,8 +16,18 @@ class ProductController extends Controller
     {
         // Admin route
         if ($request->routeIs('admin.*')) {
-            $products = Product::with('category')->orderByDesc('id')->paginate(15);
-            return view('admin.products.index', compact('products'));
+            $categories = Category::orderBy('name')->get();
+            $selectedCategory = $request->input('category');
+
+            $products = Product::with('category')
+                ->when($selectedCategory, function ($query, $selectedCategory) {
+                    return $query->where('category_id', $selectedCategory);
+                })
+                ->orderByDesc('id')
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('admin.products.index', compact('products', 'categories', 'selectedCategory'));
         }
 
         // Public route
@@ -52,6 +62,17 @@ class ProductController extends Controller
             'stock'       => 'required|integer|min:0',
             'description' => 'nullable|string',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
+        ], [
+            'name.required' => 'กรุณากรอกชื่อสินค้า',
+            'price.required' => 'กรุณากรอกราคาสินค้า',
+            'price.numeric' => 'ราคาต้องเป็นตัวเลข',
+            'price.min' => 'ราคาต้องไม่ติดลบ',
+            'stock.required' => 'กรุณากรอกจำนวนสต็อก',
+            'stock.integer' => 'สต็อกต้องเป็นตัวเลขจำนวนเต็ม',
+            'stock.min' => 'สต็อกต้องไม่ติดลบ',
+            'image.image' => 'ไฟล์ต้องเป็นรูปภาพ',
+            'image.mimes' => 'รองรับไฟล์รูปภาพนามสกุล: jpg, jpeg, png, webp เท่านั้น',
+            'image.max' => 'ขนาดของไฟล์ต้องไม่เกิน 3MB',
         ]);
 
         if ($request->hasFile('image')) {
@@ -107,6 +128,17 @@ class ProductController extends Controller
             'description'  => 'nullable|string',
             'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
             'remove_image' => 'sometimes|boolean',
+        ], [
+            'name.required' => 'กรุณากรอกชื่อสินค้า',
+            'price.required' => 'กรุณากรอกราคาสินค้า',
+            'price.numeric' => 'ราคาต้องเป็นตัวเลข',
+            'price.min' => 'ราคาต้องไม่ติดลบ',
+            'stock.required' => 'กรุณากรอกจำนวนสต็อก',
+            'stock.integer' => 'สต็อกต้องเป็นตัวเลขจำนวนเต็ม',
+            'stock.min' => 'สต็อกต้องไม่ติดลบ',
+            'image.image' => 'ไฟล์ต้องเป็นรูปภาพ',
+            'image.mimes' => 'รองรับไฟล์รูปภาพนามสกุล: jpg, jpeg, png, webp เท่านั้น',
+            'image.max' => 'ขนาดของไฟล์ต้องไม่เกิน 3MB',
         ]);
 
         $old    = $product->image;

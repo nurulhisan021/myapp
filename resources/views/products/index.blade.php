@@ -2,6 +2,7 @@
 @section('title','สินค้า')
 
 @section('content')
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 <div class="flex items-center justify-between mb-6 gap-3">
   <form method="get" class="flex gap-2">
     <input type="text" name="q" value="{{ $q ?? '' }}" placeholder="ค้นหาชื่อสินค้า"
@@ -19,52 +20,75 @@
   @endif
 </div>
 
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
   @forelse($products as $p)
-    <div class="bg-white rounded-2xl border shadow-sm overflow-hidden hover:shadow-lg transition">
-      <a href="{{ route('products.show',$p) }}">
-        <img src="{{ $p->image_url }}" class="w-full aspect-[4/3] object-cover" alt="{{ $p->name }}">
+    <div class="group bg-white rounded-2xl border shadow-sm overflow-hidden hover:shadow-xl transition-shadow duration-300">
+      <a href="{{ route('products.show',$p) }}" class="block overflow-hidden">
+        <img src="{{ $p->image_url }}" alt="{{ $p->name }}" class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500">
       </a>
       <div class="p-4">
-        <a href="{{ route('products.show',$p) }}" class="font-medium line-clamp-1">{{ $p->name }}</a>
-        <p class="text-brand font-semibold mt-1">{{ number_format($p->price,2) }} บาท</p>
-        <p class="text-sm text-gray-500 mt-2 line-clamp-2">{{ $p->description }}</p>
+        @if($p->category)
+            <p class="text-sm text-gray-500 mb-1">{{ $p->category->name }}</p>
+        @endif
+        <a href="{{ route('products.show',$p) }}" class="font-semibold text-lg text-gray-800 line-clamp-1 hover:text-brand">{{ $p->name }}</a>
+        <p class="text-brand font-bold text-xl mt-2">฿{{ number_format($p->price,2) }}</p>
 
-        @auth
-            @if(auth()->user()->is_admin)
-                {{-- Admin Buttons --}}
-                <div class="flex items-center gap-2 mt-3">
-                    <a href="{{ route('admin.products.edit', $p) }}" class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 text-sm">แก้ไข</a>
-                    <form action="{{ route('admin.products.destroy', $p) }}" method="POST" onsubmit="return confirm('ยืนยันลบ?')">
-                        @csrf @method('DELETE')
-                        <button class="px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">ลบ</button>
-                    </form>
-                </div>
-            @else
-                {{-- Logged-in User "Add to Cart" Form --}}
-                @if($p->stock > 0)
-                    <form action="{{ route('cart.add') }}" method="POST" class="mt-3 flex items-center gap-2">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{ $p->id }}">
-                        <input type="number" name="qty" value="1" min="1" max="{{ $p->stock }}" class="w-16 rounded-lg border-gray-300 text-center">
-                        <button class="px-3 py-1.5 rounded-lg bg-brand text-white hover:bg-brand-dark">🛒 ใส่ตะกร้า</button>
-                    </form>
-                @else
-                    <button class="mt-3 w-full px-3 py-1.5 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed" disabled>สินค้าหมด</button>
-                @endif
+        <div class="mt-2">
+            @if($p->stock > 0)
+                <span class="text-xs text-gray-500">คงเหลือ: {{ $p->stock }} ชิ้น</span>
             @endif
-        @else
-            {{-- Guest "Login" Button --}}
-            <a href="{{ route('login') }}" class="mt-3 block w-full text-center px-3 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">
-                เข้าสู่ระบบเพื่อสั่งซื้อ
-            </a>
-        @endauth
+        </div>
+        
+        <div class="mt-4">
+            @auth
+                @if(auth()->user()->is_admin)
+                    {{-- Admin Buttons --}}
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('admin.products.edit', $p) }}" class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 text-sm flex-1 text-center">แก้ไข</a>
+                        <form action="{{ route('admin.products.destroy', $p) }}" method="POST" onsubmit="return confirm('ยืนยันลบ?')" class="flex-1">
+                            @csrf @method('DELETE')
+                            <button class="w-full px-3 py-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 text-sm">ลบ</button>
+                        </form>
+                    </div>
+                @else
+                    {{-- User Buttons --}}
+                    @if($p->stock > 0)
+                        <div class="flex items-center gap-2">
+                          <form action="{{ route('cart.add') }}" method="POST" class="flex-1">
+                              @csrf
+                              <input type="hidden" name="product_id" value="{{ $p->id }}">
+                              <input type="hidden" name="qty" value="1">
+                              <button class="w-full px-4 py-2 rounded-lg bg-brand text-white font-semibold hover:bg-brand-dark transition-colors text-sm">
+                                เพิ่มลงตะกร้า
+                              </button>
+                          </form>
+                          <form action="{{ route('buy-now.submit') }}" method="POST" class="flex-1">
+                              @csrf
+                              <input type="hidden" name="product_id" value="{{ $p->id }}">
+                              <input type="hidden" name="qty" value="1">
+                              <button class="w-full px-4 py-2 rounded-lg bg-pink-100 text-brand font-semibold hover:bg-pink-200 transition-colors text-sm">
+                                สั่งซื้อเลย
+                              </button>
+                          </form>
+                        </div>
+                    @else
+                        <button class="w-full px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed" disabled>สินค้าหมด</button>
+                    @endif
+                @endif
+            @else
+                {{-- Guest Button --}}
+                <a href="{{ route('login') }}" class="block w-full text-center px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300">
+                    เข้าสู่ระบบเพื่อสั่งซื้อ
+                </a>
+            @endauth
+        </div>
       </div>
     </div>
   @empty
-    <p class="text-gray-500">ยังไม่มีสินค้า</p>
+    <p class="text-gray-500 col-span-full text-center">ยังไม่มีสินค้า</p>
   @endforelse
 </div>
 
 <div class="mt-6">{{ $products->links() }}</div>
+</div>
 @endsection

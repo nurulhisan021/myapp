@@ -2,7 +2,7 @@
 @section('title', 'ประวัติการสั่งซื้อ')
 
 @section('content')
-<div class="max-w-5xl mx-auto">
+<div class="max-w-5xl mx-auto px-4 sm:px-6">
     <h1 class="text-2xl font-bold mb-6">ประวัติการสั่งซื้อ</h1>
 
     @if (session('success'))
@@ -12,7 +12,8 @@
     @endif
 
     <div class="bg-white border rounded-lg shadow-sm">
-        <table class="w-full text-left">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left min-w-[640px]">
             <thead class="border-b bg-gray-50">
                 <tr>
                     <th class="p-4">คำสั่งซื้อ</th>

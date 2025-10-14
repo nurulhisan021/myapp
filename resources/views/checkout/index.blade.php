@@ -2,7 +2,7 @@
 @section('title', 'ยืนยันการสั่งซื้อ')
 
 @section('content')
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto px-4 sm:px-6">
     <h1 class="text-2xl font-bold mb-6">ยืนยันการสั่งซื้อ</h1>
 
     {{-- Bank Accounts Display --}}
@@ -50,16 +50,16 @@
         <div class="bg-white border rounded-lg shadow-sm p-6">
             <h2 class="text-lg font-semibold mb-4">2. กรอกข้อมูลจัดส่งและแนบสลิป</h2>
 
-            {{-- Recent Addresses --}}
-            @if($recentAddresses->isNotEmpty())
+            {{-- Saved Addresses --}}
+            @if($savedAddresses->isNotEmpty())
             <div class="mb-6">
-                <h3 class="text-sm font-medium text-gray-700 mb-2">หรือเลือกที่อยู่จากคำสั่งซื้อล่าสุด:</h3>
+                <h3 class="text-sm font-medium text-gray-700 mb-2">หรือเลือกจากที่อยู่ที่บันทึกไว้:</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    @foreach($recentAddresses as $address)
+                    @foreach($savedAddresses as $address)
                         <button type="button" class="address-btn text-left w-full p-3 border rounded-lg hover:bg-gray-50 hover:border-brand text-xs">
-                            <span class="font-semibold">{{ $address->shipping_name }}</span>
-                            <p class="text-gray-600">{{ Str::limit($address->shipping_address, 50) }}</p>
-                            <span class="sr-only" data-name="{{ $address->shipping_name }}" data-address="{{ $address->shipping_address }}" data-phone="{{ $address->shipping_phone }}"></span>
+                            <span class="font-semibold">{{ $address->name }}</span>
+                            <p class="text-gray-600">{{ Str::limit($address->address, 50) }}</p>
+                            <span class="sr-only" data-name="{{ $address->name }}" data-address="{{ $address->address }}" data-phone="{{ $address->phone }}"></span>
                         </button>
                     @endforeach
                 </div>
@@ -68,6 +68,7 @@
 
             <form action="{{ route('checkout.placeOrder') }}" method="POST" class="space-y-4" enctype="multipart/form-data">
                 @csrf
+                <input type="hidden" name="checkout_mode" value="{{ $isBuyNow ? 'buy_now' : 'cart' }}">
                 <div>
                     <label for="shipping_name" class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้รับ</label>
                     <input type="text" name="shipping_name" id="shipping_name" value="{{ old('shipping_name', auth()->user()->name) }}" required

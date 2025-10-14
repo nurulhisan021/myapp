@@ -2,7 +2,7 @@
 @section('title', 'รายละเอียดการสั่งซื้อ #' . $order->id)
 
 @section('content')
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto px-4 sm:px-6">
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold">รายละเอียดการสั่งซื้อ #{{ $order->id }}</h1>
         <a href="{{ route('account.orders.index') }}" class="text-sm text-gray-600 hover:underline">

@@ -32,6 +32,9 @@ class OrderController extends Controller
     {
         $request->validate([
             'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
+        ], [
+            'status.required' => 'กรุณาเลือกสถานะ',
+            'status.in' => 'สถานะที่เลือกไม่ถูกต้อง',
         ]);
 
         $order->update(['status' => $request->status]);

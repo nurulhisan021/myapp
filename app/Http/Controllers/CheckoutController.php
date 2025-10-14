@@ -13,12 +13,20 @@ class CheckoutController extends Controller
 {
     public function index()
     {
-        $cart = session('cart', []);
-        if (empty($cart)) {
-            return redirect()->route('cart.index')->with('error', 'ตะกร้าสินค้าของคุณว่างเปล่า');
+        $isBuyNow = false;
+        $cart = [];
+
+        if (session()->has('buy_now_cart')) {
+            $cart = session('buy_now_cart');
+            $isBuyNow = true;
+        } else {
+            $cart = session('cart', []);
         }
 
-        // Eager load products to get details
+        if (empty($cart)) {
+            return redirect()->route('cart.index')->with('error', 'ไม่มีสินค้าสำหรับชำระเงิน');
+        }
+
         $productIds = array_keys($cart);
         $products = Product::find($productIds);
 
@@ -28,24 +36,40 @@ class CheckoutController extends Controller
         }
 
         $bankAccount = BankAccount::where('is_active', true)->first();
+        $savedAddresses = Auth::user()->addresses()->latest()->get();
 
-        // Get recent 3 unique shipping addresses from user's past orders
-        $recentAddresses = Order::where('user_id', Auth::id())
-            ->whereNotNull('shipping_address')
-            ->select('shipping_name', 'shipping_address', 'shipping_phone')
-            ->latest()
-            ->get()
-            ->unique(function ($item) {
-                return $item['shipping_name'] . $item['shipping_address'] . $item['shipping_phone'];
-            })
-            ->take(3);
+        return view('checkout.index', compact('cart', 'products', 'total', 'bankAccount', 'savedAddresses', 'isBuyNow'));
+    }
 
-        return view('checkout.index', compact('cart', 'products', 'total', 'bankAccount', 'recentAddresses'));
+    public function initiateBuyNow(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'qty' => 'required|integer|min:1',
+        ]);
+
+        $product = Product::findOrFail($request->input('product_id'));
+        $qty = $request->input('qty');
+
+        if ($product->stock < $qty) {
+            return back()->with('error', 'สต็อกสินค้าไม่เพียงพอ (มีอยู่: ' . $product->stock . ' ชิ้น)');
+        }
+
+        // Create a temporary cart for the buy now process
+        $buyNowCart = [
+            $product->id => ['qty' => $qty]
+        ];
+
+        session(['buy_now_cart' => $buyNowCart]);
+
+        return redirect()->route('checkout.index');
     }
 
     public function placeOrder(Request $request)
     {
-        $cart = session('cart', []);
+        $mode = $request->input('checkout_mode', 'cart');
+        $cart = session($mode === 'buy_now' ? 'buy_now_cart' : 'cart', []);
+
         if (empty($cart)) {
             return redirect()->route('shop.home');
         }
@@ -55,6 +79,14 @@ class CheckoutController extends Controller
             'shipping_address' => 'required|string',
             'shipping_phone' => 'required|string|max:20',
             'payment_slip' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ], [
+            'shipping_name.required' => 'กรุณากรอกชื่อผู้รับ',
+            'shipping_address.required' => 'กรุณากรอกที่อยู่จัดส่ง',
+            'shipping_phone.required' => 'กรุณากรอกเบอร์โทรศัพท์',
+            'payment_slip.required' => 'กรุณาแนบสลิปการชำระเงิน',
+            'payment_slip.image' => 'ไฟล์ที่แนบต้องเป็นรูปภาพเท่านั้น',
+            'payment_slip.mimes' => 'รองรับไฟล์รูปภาพนามสกุล: jpg, jpeg, png, webp เท่านั้น',
+            'payment_slip.max' => 'ขนาดของไฟล์ต้องไม่เกิน 2MB',
         ]);
 
         try {
@@ -68,7 +100,7 @@ class CheckoutController extends Controller
                 $qtyInCart = $cart[$product->id]['qty'];
                 if ($product->stock < $qtyInCart) {
                     DB::rollBack();
-                    return redirect()->route('cart.index')->with('error', 'สินค้า \'' . $product->name . '\' มีในสต็อกไม่เพียงพอ (เหลือ: ' . $product->stock . ' ชิ้น) กรุณาปรับจำนวนในตะกร้า');
+                    return redirect()->route('cart.index')->with('error', 'สินค้า \'' . $product->name . '\' มีในสต็อกไม่เพียงพอ (เหลือ: ' . $product->stock . ' ชิ้น)');
                 }
             }
 
@@ -102,8 +134,12 @@ class CheckoutController extends Controller
 
             DB::commit();
 
-            // Clear the cart
-            session()->forget('cart');
+            // Clear the correct cart
+            if ($mode === 'buy_now') {
+                session()->forget('buy_now_cart');
+            } else {
+                session()->forget('cart');
+            }
 
             return redirect()->route('account.orders.index')->with('success', 'สั่งซื้อสำเร็จแล้ว! คุณสามารถตรวจสอบสถานะได้ที่นี่');
 

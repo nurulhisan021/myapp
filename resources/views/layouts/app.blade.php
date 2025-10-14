@@ -19,7 +19,7 @@
     }
   </script>
 </head>
-<body class="min-h-screen bg-gray-50 text-gray-900 antialiased">
+<body class="min-h-screen bg-gray-50 text-gray-900 antialiased flex flex-col">
   @php
     $cartCount = collect(session('cart',[]))->sum('qty');
   @endphp
@@ -71,7 +71,9 @@
                   แอดมิน
                 </a>
               @endif
-              <a href="{{ route('account.orders.index') }}" class="text-sm hover:text-brand">บัญชีของ: {{ auth()->user()->name }}</a>
+                            <span class="text-sm text-gray-600">สวัสดี, {{ auth()->user()->name }}</span>
+              <a href="{{ route('account.orders.index') }}" class="text-sm hover:text-brand">ประวัติคำสั่งซื้อ</a>
+              <a href="{{ route('account.addresses.index') }}" class="text-sm hover:text-brand">จัดการที่อยู่</a>
               <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 text-sm">ออกจากระบบ</button>
@@ -145,15 +147,14 @@
   @endif
 
   {{-- Content --}}
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+  <main class="py-8 flex-grow">
     @yield('content')
   </main>
 
   {{-- Footer --}}
   <footer class="border-t bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-sm text-gray-500 flex flex-wrap justify-between gap-2">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-sm text-gray-500 text-center">
       <p>© {{ date('Y') }} MyShop — All rights reserved.</p>
-      <p>Made with ❤️ & Tailwind CSS</p>
     </div>
   </footer>
 

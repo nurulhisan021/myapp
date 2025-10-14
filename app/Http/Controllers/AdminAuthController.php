@@ -19,6 +19,10 @@ class AdminAuthController extends Controller
         $cred = $request->validate([
             'email'    => 'required|email',
             'password' => 'required|string',
+        ], [
+            'email.required' => 'กรุณากรอกอีเมล',
+            'email.email' => 'รูปแบบอีเมลไม่ถูกต้อง',
+            'password.required' => 'กรุณากรอกรหัสผ่าน',
         ]);
 
         // อ่านจาก config ถ้ามี; ถ้าไม่มี fallback ไป env (กันเคสยังไม่เพิ่มใน config/app.php)

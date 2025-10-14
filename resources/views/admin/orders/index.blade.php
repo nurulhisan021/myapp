@@ -7,7 +7,7 @@
 </div>
 
 {{-- Filter by Status --}}
-<div class="mb-4 flex items-center gap-2 text-sm">
+<div class="mb-4 flex flex-wrap items-center gap-2 text-sm">
     <a href="{{ route('admin.orders.index') }}" class="{{ !request('status') ? 'font-bold text-brand' : '' }}">ทั้งหมด</a>
     <span class="text-gray-300">|</span>
     <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="{{ request('status') == 'pending' ? 'font-bold text-brand' : '' }}">รอดำเนินการ</a>
@@ -23,7 +23,8 @@
 
 
 <div class="bg-white border rounded-lg shadow-sm">
-    <table class="w-full text-left">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left min-w-[700px]">
         <thead class="border-b bg-gray-50">
             <tr>
                 <th class="p-4">#</th>

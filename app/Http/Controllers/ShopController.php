@@ -26,10 +26,13 @@ class ShopController extends Controller
             $products = $productQuery->latest()->take(6)->get();
         }
 
+        $cartCount = collect(session('cart', []))->sum('qty');
+
         return view('shop.home', [
             'featured' => $products, // Rename to featured for view compatibility
             'categories' => $categories,
             'selectedCategory' => $selectedCategory,
+            'cartCount' => $cartCount,
         ]);
     }
 }

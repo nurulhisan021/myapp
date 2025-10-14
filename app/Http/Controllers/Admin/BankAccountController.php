@@ -33,11 +33,20 @@ class BankAccountController extends Controller
             'remove_qr_code' => 'nullable|boolean',
         ];
 
+        $messages = [
+            'bank_name.required' => 'กรุณากรอกชื่อธนาคาร',
+            'account_name.required' => 'กรุณากรอกชื่อบัญชี',
+            'account_number.required' => 'กรุณากรอกเลขที่บัญชี',
+            'qr_code.image' => 'ไฟล์ต้องเป็นรูปภาพ',
+            'qr_code.mimes' => 'รองรับไฟล์รูปภาพนามสกุล: jpg, jpeg, png, webp เท่านั้น',
+            'qr_code.max' => 'ขนาดของไฟล์ต้องไม่เกิน 1MB',
+        ];
+
         if ($request->hasFile('qr_code')) {
             $rules['qr_code'] = 'image|mimes:jpg,jpeg,png,webp|max:1024';
         }
 
-        $data = $request->validate($rules);
+        $data = $request->validate($rules, $messages);
         $data['is_active'] = $request->has('is_active');
 
         // Find the single record, or prepare to create it.

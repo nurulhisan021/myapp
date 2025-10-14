@@ -30,7 +30,7 @@
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-semibold">รายการออเดอร์</h3>
                 {{-- Filter Tabs --}}
-                <div class="flex items-center gap-4 text-sm">
+                <div class="flex flex-wrap justify-end items-center gap-4 text-sm">
                     <a href="{{ route('admin.dashboard', ['period' => 'all']) }}" class="{{ $period == 'all' ? 'font-bold text-brand' : 'text-gray-500 hover:text-brand' }}">ทั้งหมด</a>
                     <a href="{{ route('admin.dashboard', ['period' => 'today']) }}" class="{{ $period == 'today' ? 'font-bold text-brand' : 'text-gray-500 hover:text-brand' }}">วันนี้</a>
                     <a href="{{ route('admin.dashboard', ['period' => 'week']) }}" class="{{ $period == 'week' ? 'font-bold text-brand' : 'text-gray-500 hover:text-brand' }}">สัปดาห์นี้</a>
@@ -39,7 +39,8 @@
                 </div>
             </div>
         </div>
-        <table class="w-full text-left">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left min-w-[640px]">
             <thead class="bg-gray-50">
                 <tr>
                     <th class="p-4">#</th>

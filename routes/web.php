@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\BankAccountController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Account\AddressController;
 
 // หน้าแรก (ช็อป)
 Route::get('/', [ShopController::class, 'home'])->name('shop.home');
@@ -44,11 +45,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/account/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('account.orders.cancel');
 
     // Checkout
+    Route::post('/buy-now', [CheckoutController::class, 'initiateBuyNow'])->name('buy-now.submit');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
 
     // Reviews
     Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+    // Address Book
+    Route::resource('account/addresses', AddressController::class)->except(['show'])->names('account.addresses');
 });
 
 // โซนแอดมิน (ต้องเป็นสมาชิก + is_admin=true)

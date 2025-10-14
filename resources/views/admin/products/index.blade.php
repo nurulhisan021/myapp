@@ -9,6 +9,24 @@
     </a>
 </div>
 
+{{-- Filters --}}
+<div class="mb-4">
+    <form method="GET" action="{{ route('admin.products.index') }}" class="flex items-center gap-4 p-4 bg-white border rounded-lg shadow-sm">
+        <div>
+            <label for="category" class="text-sm font-medium">กรองตามหมวดหมู่:</label>
+            <select name="category" id="category" class="ml-2 border-gray-300 rounded-lg shadow-sm focus:ring-brand focus:border-brand text-sm">
+                <option value="">ทุกหมวดหมู่</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}" {{ $selectedCategory == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 text-sm">กรอง</button>
+    </form>
+</div>
+
 @if (session('success'))
     <div class="mb-4 p-4 rounded-md bg-green-100 text-green-800">
         {{ session('success') }}
@@ -16,7 +34,8 @@
 @endif
 
 <div class="bg-white border rounded-lg shadow-sm">
-    <table class="w-full text-left">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left min-w-[720px]">
         <thead class="border-b bg-gray-50">
             <tr>
                 <th class="p-4">#</th>

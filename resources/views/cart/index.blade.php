@@ -2,6 +2,7 @@
 @section('title','ตะกร้าสินค้า')
 
 @section('content')
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 <h1 class="text-2xl font-bold mb-6">ตะกร้าสินค้า</h1>
 
 @if(empty($cart))
@@ -11,7 +12,8 @@
     </div>
 @else
   <div class="rounded-2xl border bg-white overflow-hidden">
-    <table class="w-full text-left">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left min-w-[600px]">
       <thead class="bg-gray-50 text-gray-600 text-sm">
         <tr>
           <th class="p-4">สินค้า</th>
@@ -36,6 +38,7 @@
                 <div>
                     <a href="{{ route('products.show', $product) }}" class="font-medium hover:text-brand">{{ $product->name }}</a>
                     <p class="text-sm text-gray-500">{{ $product->category->name ?? '' }}</p>
+                    <p class="text-sm text-gray-500">สต็อกคงเหลือ: {{ $product->stock }}</p>
                 </div>
               </div>
             </td>
@@ -43,7 +46,7 @@
             <td class="p-4">
               <form action="{{ route('cart.update', $product->id) }}" method="POST">
                 @csrf
-                <input type="number" name="qty" value="{{ $qty }}" min="0" 
+                <input type="number" name="qty" value="{{ $qty }}" min="0" max="{{ $product->stock }}" 
                        onchange="this.form.submit()"
                        class="w-24 rounded-lg border-gray-300 text-center focus:ring-brand focus:border-brand">
               </form>
@@ -77,4 +80,5 @@
     </div>
   </div>
 @endif
+</div>
 @endsection

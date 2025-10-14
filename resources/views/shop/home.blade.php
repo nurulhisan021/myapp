@@ -27,7 +27,8 @@
         <div class="flex items-center justify-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800">เลือกซื้อตามหมวดหมู่</h2>
         </div>
-        <div class="flex items-center justify-center gap-4 border-b pb-4">
+        <div class="overflow-x-auto pb-4">
+            <div class="flex items-center justify-start gap-4 border-b whitespace-nowrap">
             <a href="{{ route('shop.home') }}" 
                class="px-4 py-2 font-semibold transition whitespace-nowrap rounded-full {{ !$selectedCategory ? 'bg-brand text-white' : 'text-gray-500 hover:text-brand' }}">
                 ทั้งหมด
@@ -67,18 +68,34 @@
                     @endif
                     <a href="{{ route('products.show',$p) }}" class="font-semibold text-lg text-gray-800 line-clamp-1 hover:text-brand">{{ $p->name }}</a>
                     <p class="text-brand font-bold text-xl mt-2">฿{{ number_format($p->price,2) }}</p>
+
+                    <div class="mt-2">
+                        @if($p->stock > 0)
+                            <span class="text-xs text-gray-500">คงเหลือ: {{ $p->stock }} ชิ้น</span>
+                        @endif
+                    </div>
                     
                     <div class="mt-4">
                         @auth
                             @if($p->stock > 0)
-                                <form action="{{ route('cart.add') }}" method="POST">
-                                  @csrf
-                                  <input type="hidden" name="product_id" value="{{ $p->id }}">
-                                  <input type="hidden" name="qty" value="1">
-                                  <button class="w-full px-4 py-2 rounded-lg bg-brand text-white font-semibold hover:bg-brand-dark transition-colors">
-                                    เพิ่มลงตะกร้า
-                                  </button>
-                                </form>
+                                <div class="flex items-center gap-2">
+                                  <form action="{{ route('cart.add') }}" method="POST" class="flex-1">
+                                      @csrf
+                                      <input type="hidden" name="product_id" value="{{ $p->id }}">
+                                      <input type="hidden" name="qty" value="1">
+                                      <button class="w-full px-4 py-2 rounded-lg bg-brand text-white font-semibold hover:bg-brand-dark transition-colors text-sm">
+                                        เพิ่มลงตะกร้า
+                                      </button>
+                                  </form>
+                                  <form action="{{ route('buy-now.submit') }}" method="POST" class="flex-1">
+                                      @csrf
+                                      <input type="hidden" name="product_id" value="{{ $p->id }}">
+                                      <input type="hidden" name="qty" value="1">
+                                      <button class="w-full px-4 py-2 rounded-lg bg-pink-100 text-brand font-semibold hover:bg-pink-200 transition-colors text-sm">
+                                        สั่งซื้อเลย
+                                      </button>
+                                  </form>
+                                </div>
                             @else
                                 <button class="w-full px-4 py-2 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed" disabled>สินค้าหมด</button>
                             @endif

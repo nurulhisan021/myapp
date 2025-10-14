@@ -23,6 +23,11 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:100|unique:categories,name',
+        ], [
+            'name.required' => 'กรุณากรอกชื่อหมวดหมู่',
+            'name.string' => 'ชื่อหมวดหมู่ต้องเป็นข้อความ',
+            'name.max' => 'ชื่อหมวดหมู่ต้องมีความยาวไม่เกิน 100 ตัวอักษร',
+            'name.unique' => 'มีหมวดหมู่นี้อยู่แล้ว',
         ]);
 
         Category::create($request->only('name'));
@@ -39,6 +44,11 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:100|unique:categories,name,' . $category->id,
+        ], [
+            'name.required' => 'กรุณากรอกชื่อหมวดหมู่',
+            'name.string' => 'ชื่อหมวดหมู่ต้องเป็นข้อความ',
+            'name.max' => 'ชื่อหมวดหมู่ต้องมีความยาวไม่เกิน 100 ตัวอักษร',
+            'name.unique' => 'มีหมวดหมู่นี้อยู่แล้ว',
         ]);
 
         $category->update($request->only('name'));

@@ -2,6 +2,7 @@
 @section('title',$product->name)
 
 @section('content')
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 <div class="grid md:grid-cols-2 gap-8">
   <div class="bg-white rounded-2xl border overflow-hidden">
     <img src="{{ $product->image_url }}" class="w-full aspect-[4/3] object-cover">
@@ -119,5 +120,6 @@
             </div>
         @endforelse
     </div>
+</div>
 </div>
 @endsection
