@@ -20,54 +20,84 @@
 @endif
 
 <div class="max-w-lg bg-white border rounded-lg shadow-sm p-6">
-    <form action="{{ route('admin.bank-account.update') }}" method="POST" class="space-y-4" enctype="multipart/form-data">
-        @csrf
-        @method('PUT')
-        <div>
-            <label for="bank_name" class="block text-sm font-medium text-gray-700 mb-1">ชื่อธนาคาร</label>
-            <input type="text" name="bank_name" id="bank_name" value="{{ old('bank_name', $bankAccount->bank_name) }}" required
-                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
-        </div>
-        <div>
-            <label for="account_name" class="block text-sm font-medium text-gray-700 mb-1">ชื่อบัญชี</label>
-            <input type="text" name="account_name" id="account_name" value="{{ old('account_name', $bankAccount->account_name) }}" required
-                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
-        </div>
-        <div>
-            <label for="account_number" class="block text-sm font-medium text-gray-700 mb-1">เลขที่บัญชี</label>
-            <input type="text" name="account_number" id="account_number" value="{{ old('account_number', $bankAccount->account_number) }}" required
-                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
-        </div>
-        <div class="flex items-start">
-            <div class="flex items-center h-5">
-                <input id="is_active" name="is_active" type="checkbox" value="1" {{ $bankAccount->is_active ? 'checked' : '' }} class="focus:ring-brand h-4 w-4 text-brand border-gray-300 rounded">
+    @if(Auth::user()->can('update', $bankAccount))
+        <form action="{{ route('admin.bank-account.update') }}" method="POST" class="space-y-4" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            <div>
+                <label for="bank_name" class="block text-sm font-medium text-gray-700 mb-1">ชื่อธนาคาร</label>
+                <input type="text" name="bank_name" id="bank_name" value="{{ old('bank_name', $bankAccount->bank_name) }}" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
             </div>
-            <div class="ml-3 text-sm">
-                <label for="is_active" class="font-medium text-gray-700">เปิดใช้งาน</label>
-                <p class="text-gray-500">ให้ลูกค้ามองเห็นบัญชีนี้ในหน้าชำระเงิน</p>
+            <div>
+                <label for="account_name" class="block text-sm font-medium text-gray-700 mb-1">ชื่อบัญชี</label>
+                <input type="text" name="account_name" id="account_name" value="{{ old('account_name', $bankAccount->account_name) }}" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
             </div>
-        </div>
+            <div>
+                <label for="account_number" class="block text-sm font-medium text-gray-700 mb-1">เลขที่บัญชี</label>
+                <input type="text" name="account_number" id="account_number" value="{{ old('account_number', $bankAccount->account_number) }}" required
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
+            </div>
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="is_active" name="is_active" type="checkbox" value="1" {{ $bankAccount->is_active ? 'checked' : '' }} class="focus:ring-brand h-4 w-4 text-brand border-gray-300 rounded">
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="is_active" class="font-medium text-gray-700">เปิดใช้งาน</label>
+                    <p class="text-gray-500">ให้ลูกค้ามองเห็นบัญชีนี้ในหน้าชำระเงิน</p>
+                </div>
+            </div>
 
-        <div class="pt-4 space-y-2">
-            <label class="block text-sm font-medium text-gray-700">QR Code (PromptPay)</label>
-            <div class="flex items-center gap-4">
-                <img id="qr-preview" src="{{ $bankAccount->qr_code_url ?? asset('images/product-placeholder.png') }}" class="w-24 h-24 rounded-lg object-cover border p-1">
-                <input type="file" name="qr_code" id="qr_code" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-brand hover:file:bg-pink-100">
+            <div class="pt-4 space-y-2">
+                <label class="block text-sm font-medium text-gray-700">QR Code (PromptPay)</label>
+                <div class="flex items-center gap-4">
+                    <img id="qr-preview" src="{{ $bankAccount->qr_code_url ?? asset('images/product-placeholder.png') }}" class="w-24 h-24 rounded-lg object-cover border p-1">
+                    <input type="file" name="qr_code" id="qr_code" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-pink-50 file:text-brand hover:file:bg-pink-100">
+                </div>
+                @if($bankAccount->qr_code_path)
+                <label class="flex items-center gap-2 text-xs text-gray-600">
+                    <input type="checkbox" name="remove_qr_code" value="1" class="rounded border-gray-300 text-brand shadow-sm focus:ring-brand">
+                    <span>ลบ QR Code ปัจจุบัน</span>
+                </label>
+                @endif
             </div>
-            @if($bankAccount->qr_code_path)
-            <label class="flex items-center gap-2 text-xs text-gray-600">
-                <input type="checkbox" name="remove_qr_code" value="1" class="rounded border-gray-300 text-brand shadow-sm focus:ring-brand">
-                <span>ลบ QR Code ปัจจุบัน</span>
-            </label>
-            @endif
-        </div>
 
-        <div class="pt-4 border-t">
-            <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
-                บันทึกการตั้งค่า
-            </button>
+            <div class="pt-4 border-t">
+                <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+                    บันทึกการตั้งค่า
+                </button>
+            </div>
+        </form>
+    @else
+        {{-- Read-only display for regular admins --}}
+        <div class="space-y-4">
+            <div>
+                <p class="block text-sm font-medium text-gray-700 mb-1">ชื่อธนาคาร</p>
+                <p class="px-3 py-2 bg-gray-50 rounded-lg border">{{ $bankAccount->bank_name ?? '-' }}</p>
+            </div>
+            <div>
+                <p class="block text-sm font-medium text-gray-700 mb-1">ชื่อบัญชี</p>
+                <p class="px-3 py-2 bg-gray-50 rounded-lg border">{{ $bankAccount->account_name ?? '-' }}</p>
+            </div>
+            <div>
+                <p class="block text-sm font-medium text-gray-700 mb-1">เลขที่บัญชี</p>
+                <p class="px-3 py-2 bg-gray-50 rounded-lg border">{{ $bankAccount->account_number ?? '-' }}</p>
+            </div>
+            <div>
+                <p class="block text-sm font-medium text-gray-700 mb-1">สถานะ</p>
+                <p class="px-3 py-2 bg-gray-50 rounded-lg border">{{ $bankAccount->is_active ? 'เปิดใช้งาน' : 'ปิดใช้งาน' }}</p>
+            </div>
+            <div class="pt-4 space-y-2">
+                <p class="block text-sm font-medium text-gray-700">QR Code (PromptPay)</p>
+                @if($bankAccount->qr_code_path)
+                    <img src="{{ $bankAccount->qr_code_url }}" alt="QR Code" class="w-32 h-32 rounded-lg object-cover border p-1">
+                @else
+                    <p class="text-gray-500">- ไม่มี QR Code -</p>
+                @endif
+            </div>
         </div>
-    </form>
+    @endif
 </div>
 
 @push('scripts')

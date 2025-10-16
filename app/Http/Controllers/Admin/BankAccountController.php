@@ -14,6 +14,8 @@ class BankAccountController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', BankAccount::class);
+
         $bankAccount = BankAccount::firstOrNew([], [
             'is_active' => false
         ]);
@@ -25,6 +27,9 @@ class BankAccountController extends Controller
      */
     public function update(Request $request)
     {
+        $bankAccount = BankAccount::firstOrNew([]); // Get the instance to pass to policy
+        $this->authorize('update', $bankAccount);
+
         $rules = [
             'bank_name' => 'required|string|max:255',
             'account_name' => 'required|string|max:255',
