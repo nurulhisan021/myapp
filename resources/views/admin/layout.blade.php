@@ -37,6 +37,10 @@
              class="{{ request()->routeIs('admin.bank-account.index') ? 'text-brand font-bold' : '' }} hover:text-brand">
              จัดการบัญชีธนาคาร
           </a>
+          <a href="{{ route('admin.admins.index') }}"
+             class="{{ request()->routeIs('admin.admins.*') ? 'text-brand font-bold' : '' }} hover:text-brand">
+             จัดการแอดมิน
+          </a>
         </nav>
       </aside>
 

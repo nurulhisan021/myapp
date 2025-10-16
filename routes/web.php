@@ -11,6 +11,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\BankAccountController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Account\AddressController;
@@ -61,6 +62,7 @@ Route::prefix('admin')->middleware(['auth','admin'])->as('admin.')->group(functi
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('products', ProductController::class)->except(['show'])->names('products');
     Route::resource('categories', CategoryController::class)->except(['show'])->names('categories');
+    Route::resource('admins', AdminController::class)->names('admins');
 
     // Bank Account Settings
     Route::get('bank-account', [BankAccountController::class, 'index'])->name('bank-account.index');
