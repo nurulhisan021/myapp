@@ -28,11 +28,17 @@ class ShopController extends Controller
 
         $cartCount = collect(session('cart', []))->sum('qty');
 
+        $wishlistIds = [];
+        if (auth()->check()) {
+            $wishlistIds = auth()->user()->wishlist()->pluck('products.id')->toArray();
+        }
+
         return view('shop.home', [
             'featured' => $products, // Rename to featured for view compatibility
             'categories' => $categories,
             'selectedCategory' => $selectedCategory,
             'cartCount' => $cartCount,
+            'wishlistIds' => $wishlistIds,
         ]);
     }
 }

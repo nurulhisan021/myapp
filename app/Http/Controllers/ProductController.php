@@ -31,20 +31,47 @@ class ProductController extends Controller
         }
 
         // Public route
-        $q = $request->input('q');
+        $categories = Category::orderBy('name')->get();
 
-        $products = Product::with('category') // Eager load category
-            ->when($q, function ($query) use ($q) {
-                $query->where('name', 'like', "%{$q}%")
-                      ->orWhereHas('category', function ($catQuery) use ($q) {
-                          $catQuery->where('name', 'like', "%{$q}%");
-                      });
-            })
-            ->orderByDesc('id')
-            ->paginate(12)
-            ->withQueryString();
+        $productsQuery = Product::with('category');
 
-        return view('products.index', compact('products', 'q'));
+        // Search by name
+        if ($request->filled('search')) {
+            $productsQuery->where('name', 'like', '%' . $request->input('search') . '%');
+        }
+
+        // Filter by category
+        if ($request->filled('category')) {
+            $productsQuery->where('category_id', $request->input('category'));
+        }
+
+        // Sorting
+        $sort = $request->input('sort');
+        switch ($sort) {
+            case 'price_asc':
+                $productsQuery->orderBy('price', 'asc');
+                break;
+            case 'price_desc':
+                $productsQuery->orderBy('price', 'desc');
+                break;
+            default:
+                $productsQuery->orderByDesc('id'); // Newest first
+                break;
+        }
+
+        $products = $productsQuery->paginate(12)->withQueryString();
+
+        $wishlistIds = [];
+        if (Auth::check()) {
+            $wishlistIds = Auth::user()->wishlist()->pluck('products.id')->toArray();
+        }
+
+        return view('products.index', [
+            'products' => $products,
+            'categories' => $categories,
+            'request' => $request, // Pass request to easily access old input
+            'wishlistIds' => $wishlistIds,
+        ]);
     }
 
     public function create()
@@ -92,8 +119,10 @@ class ProductController extends Controller
         $hasPurchased = false;
         $hasReviewed = false;
 
+        $wishlistIds = [];
         if (Auth::check()) {
             $user = Auth::user();
+            $wishlistIds = $user->wishlist()->pluck('products.id')->toArray();
 
             $hasPurchased = Order::where('user_id', $user->id)
                 ->where('status', 'delivered')
@@ -109,7 +138,7 @@ class ProductController extends Controller
             $canReview = $hasPurchased && !$hasReviewed;
         }
 
-        return view('products.show', compact('product', 'canReview', 'hasPurchased', 'hasReviewed'));
+        return view('products.show', compact('product', 'canReview', 'hasPurchased', 'hasReviewed', 'wishlistIds'));
     }
 
     public function edit(Product $product)

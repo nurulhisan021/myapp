@@ -74,6 +74,8 @@
                             <span class="text-sm text-gray-600">สวัสดี, {{ auth()->user()->name }}</span>
               <a href="{{ route('account.orders.index') }}" class="text-sm hover:text-brand">ประวัติคำสั่งซื้อ</a>
               <a href="{{ route('account.addresses.index') }}" class="text-sm hover:text-brand">จัดการที่อยู่</a>
+              <a href="{{ route('account.profile.edit') }}" class="text-sm hover:text-brand">แก้ไขโปรไฟล์</a>
+              <a href="{{ route('wishlist.index') }}" class="text-sm hover:text-brand">สินค้าที่อยากได้</a>
               <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 text-sm">ออกจากระบบ</button>
@@ -115,6 +117,8 @@
                   <p class="text-sm text-gray-500">บัญชีของฉัน: {{ auth()->user()->name }}</p>
                   <a href="{{ route('account.orders.index') }}" class="hover:text-brand block py-1">ประวัติคำสั่งซื้อ</a>
                   <a href="{{ route('account.addresses.index') }}" class="hover:text-brand block py-1">จัดการที่อยู่</a>
+                  <a href="{{ route('account.profile.edit') }}" class="hover:text-brand block py-1">แก้ไขโปรไฟล์</a>
+                  <a href="{{ route('wishlist.index') }}" class="hover:text-brand block py-1">สินค้าที่อยากได้</a>
               </div>
               <form action="{{ route('logout') }}" method="POST" class="pt-2 border-t">
                 @csrf

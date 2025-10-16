@@ -39,6 +39,9 @@
                     <a href="{{ route('products.show', $product) }}" class="font-medium hover:text-brand">{{ $product->name }}</a>
                     <p class="text-sm text-gray-500">{{ $product->category->name ?? '' }}</p>
                     <p class="text-sm text-gray-500">สต็อกคงเหลือ: {{ $product->stock }}</p>
+                    @if ($product->stock < $qty)
+                        <p class="text-sm text-red-500 font-semibold">! สต็อกไม่เพียงพอ (กรุณาลดจำนวนสินค้า)</p>
+                    @endif
                 </div>
               </div>
             </td>

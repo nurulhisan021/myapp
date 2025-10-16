@@ -40,6 +40,23 @@
                     <input type="number" name="qty" value="1" min="1" max="{{ $product->stock }}" class="w-20 rounded-lg border-gray-300 text-center focus:ring-brand focus:border-brand">
                     <button class="px-5 py-2 rounded-xl bg-brand text-white hover:bg-brand-dark">🛒 ใส่ตะกร้า</button>
                 </form>
+                {{-- Wishlist Button --}}
+                <form action="{{ route('wishlist.toggle', $product->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="p-3 rounded-xl hover:bg-gray-100 border">
+                         @if(in_array($product->id, $wishlistIds ?? []))
+                            {{-- Solid Heart (Corrected) --}}
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-brand">
+                                <path fill-rule="evenodd" d="M6.32 2.577a4.5 4.5 0 016.364 0l.086.086a4.5 4.5 0 016.364 6.364l-6.5 6.5a.75.75 0 01-1.06 0l-6.5-6.5a4.5 4.5 0 010-6.364l.086-.086z" clip-rule="evenodd" />
+                            </svg>
+                        @else
+                            {{-- Outline Heart --}}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400 hover:text-brand">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                            </svg>
+                        @endif
+                    </button>
+                </form>
             @else
                 <button class="mt-6 w-full px-5 py-2 rounded-xl bg-gray-300 text-gray-500 cursor-not-allowed" disabled>สินค้าหมด</button>
             @endif

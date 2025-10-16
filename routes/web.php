@@ -55,6 +55,14 @@ Route::middleware('auth')->group(function () {
 
     // Address Book
     Route::resource('account/addresses', AddressController::class)->except(['show'])->names('account.addresses');
+
+    // Profile Management
+    Route::get('/account/profile', [\App\Http\Controllers\Account\ProfileController::class, 'edit'])->name('account.profile.edit');
+    Route::put('/account/profile', [\App\Http\Controllers\Account\ProfileController::class, 'update'])->name('account.profile.update');
+
+    // Wishlist
+    Route::get('/account/wishlist', [\App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/{product}', [\App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
 });
 
 // โซนแอดมิน (ต้องเป็นสมาชิก + is_admin=true)

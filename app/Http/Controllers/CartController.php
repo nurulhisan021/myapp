@@ -68,6 +68,10 @@ class CartController extends Controller
             return back()->with('error','ไม่พบสินค้าในตะกร้า');
         }
 
+        if ($data['qty'] > $product->stock) {
+            return back()->with('error', 'สต็อกสินค้าไม่เพียงพอ (มีอยู่: ' . $product->stock . ' ชิ้น)');
+        }
+
         if ($data['qty'] == 0) {
             unset($cart[$product->id]);
         } else {

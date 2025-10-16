@@ -59,9 +59,31 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               @foreach($featured as $p)
                 <div class="group bg-white rounded-2xl border shadow-sm overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                  <a href="{{ route('products.show',$p) }}" class="block overflow-hidden">
-                    <img src="{{ $p->image_url }}" alt="{{ $p->name }}" class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500">
-                  </a>
+                  <div class="relative">
+                    <a href="{{ route('products.show',$p) }}" class="block overflow-hidden">
+                      <img src="{{ $p->image_url }}" alt="{{ $p->name }}" class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500">
+                    </a>
+                    @auth
+                        @if(!auth()->user()->is_admin)
+                            <form action="{{ route('wishlist.toggle', $p->id) }}" method="POST" class="absolute top-2 right-2">
+                                @csrf
+                                <button type="submit" class="p-2 rounded-full bg-white/70 hover:bg-white backdrop-blur-sm shadow">
+                                    @if(in_array($p->id, $wishlistIds))
+                                        {{-- Solid Heart (Corrected) --}}
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-brand">
+                                            <path fill-rule="evenodd" d="M6.32 2.577a4.5 4.5 0 016.364 0l.086.086a4.5 4.5 0 016.364 6.364l-6.5 6.5a.75.75 0 01-1.06 0l-6.5-6.5a4.5 4.5 0 010-6.364l.086-.086z" clip-rule="evenodd" />
+                                        </svg>
+                                    @else
+                                        {{-- Outline Heart --}}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-500">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                        </svg>
+                                    @endif
+                                </button>
+                            </form>
+                        @endif
+                    @endauth
+                  </div>
                   <div class="p-4">
                     @if($p->category)
                         <p class="text-sm text-gray-500 mb-1">{{ $p->category->name }}</p>

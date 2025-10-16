@@ -49,4 +49,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Address::class);
     }
+
+    /**
+     * The products that the user has added to their wishlist.
+     */
+    public function wishlist()
+    {
+        return $this->belongsToMany(Product::class, 'wishlist_items');
+    }
 }

@@ -11,24 +11,22 @@ class AdminController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', User::class);
+
         $admins = User::where('is_admin', true)->latest()->paginate(10);
         return view('admin.admins.index', compact('admins'));
     }
 
     public function create()
     {
-        if (!auth()->user()->is_super_admin) {
-            return back()->with('error', 'คุณไม่มีสิทธิ์สร้างแอดมินใหม่');
-        }
+        $this->authorize('create', User::class);
 
         return view('admin.admins.create');
     }
 
     public function store(Request $request)
     {
-        if (!auth()->user()->is_super_admin) {
-            return back()->with('error', 'คุณไม่มีสิทธิ์สร้างแอดมินใหม่');
-        }
+        $this->authorize('create', User::class);
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -48,18 +46,14 @@ class AdminController extends Controller
 
     public function edit(User $admin)
     {
-        if (!auth()->user()->is_super_admin && $admin->id !== auth()->id()) {
-            return back()->with('error', 'คุณไม่มีสิทธิ์แก้ไขแอดมินคนอื่น');
-        }
+        $this->authorize('update', $admin);
 
         return view('admin.admins.edit', compact('admin'));
     }
 
     public function update(Request $request, User $admin)
     {
-        if (!auth()->user()->is_super_admin && $admin->id !== auth()->id()) {
-            return back()->with('error', 'คุณไม่มีสิทธิ์แก้ไขแอดมินคนอื่น');
-        }
+        $this->authorize('update', $admin);
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -81,19 +75,7 @@ class AdminController extends Controller
 
     public function destroy(User $admin)
     {
-        if (!auth()->user()->is_super_admin) {
-            return back()->with('error', 'คุณไม่มีสิทธิ์ลบแอดมิน');
-        }
-
-        // Prevent deleting the last admin
-        if (User::where('is_admin', true)->count() <= 1) {
-            return back()->with('error', 'ไม่สามารถลบแอดมินคนสุดท้ายได้');
-        }
-
-        // Prevent self-deletion
-        if ($admin->id === auth()->id()) {
-            return back()->with('error', 'ไม่สามารถลบตัวเองได้');
-        }
+        $this->authorize('delete', $admin);
 
         $admin->delete();
 

@@ -4,11 +4,11 @@
 @section('admin_content')
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold">จัดการแอดมิน</h1>
-    @if(auth()->user()->is_super_admin)
+    @can('create', App\Models\User::class)
     <a href="{{ route('admin.admins.create') }}" class="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700">
         + เพิ่มแอดมินใหม่
     </a>
-    @endif
+    @endcan
 </div>
 
 {{-- Display success/error messages --}}
@@ -37,16 +37,16 @@
                     <td class="p-4">{{ $admin->email }}</td>
                     <td class="p-4">{{ $admin->created_at->format('d/m/Y') }}</td>
 <td class="p-4 flex gap-2">
-                        @if(auth()->user()->is_super_admin || auth()->id() == $admin->id)
+                        @can('update', $admin)
                         <a href="{{ route('admin.admins.edit', $admin) }}" class="text-blue-600 hover:underline">แก้ไข</a>
-                        @endif
-                        @if(auth()->user()->is_super_admin)
+                        @endcan
+                        @can('delete', $admin)
                         <form action="{{ route('admin.admins.destroy', $admin) }}" method="POST" onsubmit="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบแอดมินคนนี้?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-600 hover:underline">ลบ</button>
                         </form>
-                        @endif
+                        @endcan
                     </td>
                 </tr>
             @empty

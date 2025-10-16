@@ -7,90 +7,124 @@
     {{-- Stat Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div class="bg-white border rounded-lg shadow-sm p-6">
-            <h3 class="text-sm font-medium text-gray-500">ยอดขายทั้งหมด</h3>
-            <p class="text-3xl font-bold mt-1">฿{{ number_format($totalRevenue, 2) }}</p>
-        </div>
-        <div class="bg-white border rounded-lg shadow-sm p-6">
             <h3 class="text-sm font-medium text-gray-500">ยอดขายวันนี้</h3>
-            <p class="text-3xl font-bold mt-1">฿{{ number_format($todayRevenue, 2) }}</p>
+            <p class="text-3xl font-bold mt-1">฿{{ number_format($salesToday, 2) }}</p>
         </div>
         <div class="bg-white border rounded-lg shadow-sm p-6">
-            <h3 class="text-sm font-medium text-gray-500">ออเดอร์ทั้งหมด</h3>
-            <p class="text-3xl font-bold mt-1">{{ number_format($totalOrders) }}</p>
+            <h3 class="text-sm font-medium text-gray-500">ยอดขายเดือนนี้</h3>
+            <p class="text-3xl font-bold mt-1">฿{{ number_format($salesThisMonth, 2) }}</p>
         </div>
         <div class="bg-white border rounded-lg shadow-sm p-6">
-            <h3 class="text-sm font-medium text-gray-500">ออเดอร์วันนี้</h3>
-            <p class="text-3xl font-bold mt-1">{{ number_format($todayOrders) }}</p>
+            <h3 class="text-sm font-medium text-gray-500">ออเดอร์รอตรวจสอบ</h3>
+            <p class="text-3xl font-bold mt-1">{{ number_format($pendingOrders) }}</p>
+        </div>
+        <div class="bg-white border rounded-lg shadow-sm p-6">
+            <h3 class="text-sm font-medium text-gray-500">ลูกค้าทั้งหมด</h3>
+            <p class="text-3xl font-bold mt-1">{{ number_format($totalCustomers) }}</p>
         </div>
     </div>
 
-    {{-- Orders Table --}}
-    <div class="bg-white border rounded-lg shadow-sm">
-        <div class="p-4 border-b">
-            <div class="flex items-center justify-between">
-                <h3 class="text-lg font-semibold">รายการออเดอร์</h3>
-                {{-- Filter Tabs --}}
-                <div class="flex flex-wrap justify-end items-center gap-4 text-sm">
-                    <a href="{{ route('admin.dashboard', ['period' => 'all']) }}" class="{{ $period == 'all' ? 'font-bold text-brand' : 'text-gray-500 hover:text-brand' }}">ทั้งหมด</a>
-                    <a href="{{ route('admin.dashboard', ['period' => 'today']) }}" class="{{ $period == 'today' ? 'font-bold text-brand' : 'text-gray-500 hover:text-brand' }}">วันนี้</a>
-                    <a href="{{ route('admin.dashboard', ['period' => 'week']) }}" class="{{ $period == 'week' ? 'font-bold text-brand' : 'text-gray-500 hover:text-brand' }}">สัปดาห์นี้</a>
-                    <a href="{{ route('admin.dashboard', ['period' => 'month']) }}" class="{{ $period == 'month' ? 'font-bold text-brand' : 'text-gray-500 hover:text-brand' }}">เดือนนี้</a>
-                    <a href="{{ route('admin.dashboard', ['period' => 'year']) }}" class="{{ $period == 'year' ? 'font-bold text-brand' : 'text-gray-500 hover:text-brand' }}">ปีนี้</a>
-                </div>
+    {{-- Main Content Grid --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {{-- Sales Chart (2/3 width) --}}
+        <div class="lg:col-span-2 bg-white border rounded-lg shadow-sm p-6">
+            <h3 class="text-lg font-semibold mb-4">ยอดขาย 7 วันล่าสุด</h3>
+            <canvas id="salesChart"></canvas>
+        </div>
+
+        {{-- Right Column --}}
+        <div class="space-y-8">
+            {{-- Low Stock Products --}}
+            <div class="bg-white border rounded-lg shadow-sm p-6">
+                <h3 class="text-lg font-semibold mb-4">สินค้าใกล้หมดสต็อก (ต่ำกว่า 10 ชิ้น)</h3>
+                @if($lowStockProducts->isEmpty())
+                    <p class="text-gray-500 text-center mt-8">ไม่มีสินค้าใกล้หมดสต็อก</p>
+                @else
+                    <ul class="divide-y">
+                        @foreach($lowStockProducts as $product)
+                            <li class="py-3 flex justify-between items-center">
+                                <div>
+                                    <a href="{{ route('admin.products.edit', $product) }}" class="font-medium hover:text-brand">{{ $product->name }}</a>
+                                </div>
+                                <span class="font-bold text-red-500">{{ $product->stock }} ชิ้น</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
+
+            {{-- Best Selling Products --}}
+            <div class="bg-white border rounded-lg shadow-sm p-6">
+                <h3 class="text-lg font-semibold mb-4">5 อันดับสินค้าขายดีประจำเดือนนี้</h3>
+                @if($bestSellingProducts->isEmpty())
+                    <p class="text-gray-500 text-center mt-8">ยังไม่มีข้อมูลสินค้าขายดีในเดือนนี้</p>
+                @else
+                    <ul class="divide-y">
+                        @foreach($bestSellingProducts as $product)
+                            <li class="py-3 flex justify-between items-center">
+                                <div>
+                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="font-medium hover:text-brand">{{ $product->name }}</a>
+                                </div>
+                                <span class="font-bold text-gray-700">{{ $product->total_sold }} ชิ้น</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
             </div>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left min-w-[640px]">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="p-4">#</th>
-                    <th class="p-4">ลูกค้า</th>
-                    <th class="p-4">วันที่</th>
-                    <th class="p-4">สถานะ</th>
-                    <th class="p-4 text-right">ยอดรวม</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($orders as $order)
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="p-4">{{ $orders->firstItem() + $loop->index }}</td>
-                        <td class="p-4">{{ $order->user->name }}</td>
-                        <td class="p-4">{{ $order->created_at->format('d/m/Y H:i') }}</td>
-                        <td class="p-4">
-                            <span class="px-2 py-1 rounded-full text-xs font-medium
-                                @switch($order->status)
-                                    @case('pending') bg-yellow-100 text-yellow-800 @break
-                                    @case('processing') bg-blue-100 text-blue-800 @break
-                                    @case('shipped') bg-green-100 text-green-800 @break
-                                    @case('delivered') bg-gray-200 text-gray-800 @break
-                                    @case('cancelled') bg-red-100 text-red-800 @break
-                                    @default bg-gray-100 text-gray-800
-                                @endswitch
-                            ">
-                                @switch($order->status)
-                                    @case('pending') รอดำเนินการ @break
-                                    @case('processing') กำลังเตรียมจัดส่ง @break
-                                    @case('shipped') จัดส่งแล้ว @break
-                                    @case('delivered') จัดส่งสำเร็จ @break
-                                    @case('cancelled') ยกเลิก @break
-                                    @default {{ ucfirst($order->status) }}
-                                @endswitch
-                            </span>
-                        </td>
-                        <td class="p-4 text-right font-semibold">฿{{ number_format($order->total_amount, 2) }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" class="p-6 text-center text-gray-500">ไม่พบคำสั่งซื้อในช่วงเวลานี้</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-        @if($orders->hasPages())
-            <div class="p-4 border-t">
-                {{ $orders->links() }}
-            </div>
-        @endif
     </div>
-
 @endsection
+
+@push('scripts')
+{{-- Chart.js --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('salesChart');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: @json($chartLabels),
+            datasets: [{
+                label: 'ยอดขาย',
+                data: @json($chartData),
+                fill: true,
+                borderColor: '#ec4899', // brand color
+                backgroundColor: '#ec489920', // brand color with transparency
+                tension: 0.2
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '฿' + new Intl.NumberFormat().format(value);
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += '฿' + new Intl.NumberFormat().format(context.parsed.y);
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+@endpush
