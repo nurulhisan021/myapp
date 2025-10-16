@@ -17,6 +17,8 @@ class Order extends Model
         'shipping_address',
         'shipping_phone',
         'payment_slip_path',
+        'tracking_number',
+        'shipping_carrier',
     ];
 
     protected $casts = [

@@ -45,8 +45,22 @@ class OrderController extends Controller
             return back()->with('error', 'ไม่สามารถยกเลิกคำสั่งซื้อที่กำลังดำเนินการแล้วได้');
         }
 
-        // 3. Update status
-        $order->update(['status' => 'cancelled']);
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () use ($order) {
+                // 3. Update status
+                $order->update(['status' => 'cancelled']);
+
+                // 4. Restore stock
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
+                }
+            });
+        } catch (\Exception $e) {
+            // Log::error('Failed to cancel order: ' . $e->getMessage());
+            return back()->with('error', 'เกิดข้อผิดพลาดในการยกเลิกคำสั่งซื้อ');
+        }
 
         return back()->with('ok', 'ยกเลิกคำสั่งซื้อ #'.$order->id.' เรียบร้อยแล้ว');
     }

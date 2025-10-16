@@ -101,6 +101,16 @@
                     <dd class="ml-4 whitespace-pre-wrap">{{ $order->shipping_address }}</dd>
                     <dt class="font-semibold mt-2">เบอร์โทรศัพท์:</dt>
                     <dd class="ml-4">{{ $order->shipping_phone }}</dd>
+
+                    @if($order->tracking_number && ($order->status == 'shipped' || $order->status == 'delivered'))
+                    <dt class="font-semibold pt-2 mt-2 border-t">เลขพัสดุ:</dt>
+                    <dd class="ml-4 font-mono text-blue-600">{{ $order->tracking_number }}</dd>
+                    @endif
+
+                    @if($order->shipping_carrier && ($order->status == 'shipped' || $order->status == 'delivered'))
+                    <dt class="font-semibold mt-2">บริษัทขนส่ง:</dt>
+                    <dd class="ml-4">{{ $order->shipping_carrier }}</dd>
+                    @endif
                 </dl>
             </div>
 

@@ -67,10 +67,10 @@
         {{-- Update Status Form --}}
         <div class="bg-white border rounded-lg shadow-sm p-4">
             <h2 class="text-lg font-semibold mb-3">อัปเดตสถานะ</h2>
-            <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST">
+            <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST" id="statusForm">
                 @csrf
-                <div class="flex items-center gap-2">
-                    <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
+                <div class="space-y-3">
+                    <select name="status" id="statusSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
                         @php
                             $statuses = [
                                 'pending' => 'รอดำเนินการ',
@@ -86,8 +86,19 @@
                             </option>
                         @endforeach
                     </select>
-                    <button type="submit" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
-                        อัปเดต
+
+                    <div id="trackingNumberGroup" class="hidden space-y-3">
+                        <label for="tracking_number" class="block text-sm font-medium mb-1">เลขพัสดุ</label>
+                        <input type="text" name="tracking_number" id="tracking_number" value="{{ old('tracking_number', $order->tracking_number) }}" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand font-mono">
+
+                        <label for="shipping_carrier" class="block text-sm font-medium mb-1">บริษัทขนส่ง</label>
+                        <input type="text" name="shipping_carrier" id="shipping_carrier" value="{{ old('shipping_carrier', $order->shipping_carrier) }}" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
+                    </div>
+
+                    <button type="submit" class="w-full px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
+                        อัปเดตสถานะ
                     </button>
                 </div>
             </form>
@@ -107,6 +118,16 @@
                 
                 <dt class="font-semibold mt-2">เบอร์โทรศัพท์:</dt>
                 <dd class="ml-4">{{ $order->shipping_phone }}</dd>
+
+                @if($order->tracking_number)
+                <dt class="font-semibold pt-2 mt-2 border-t">เลขพัสดุ:</dt>
+                <dd class="ml-4 font-mono text-blue-600">{{ $order->tracking_number }}</dd>
+                @endif
+
+                @if($order->shipping_carrier)
+                <dt class="font-semibold mt-2">บริษัทขนส่ง:</dt>
+                <dd class="ml-4">{{ $order->shipping_carrier }}</dd>
+                @endif
             </dl>
         </div>
 
@@ -125,3 +146,27 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusSelect = document.getElementById('statusSelect');
+        const trackingGroup = document.getElementById('trackingNumberGroup');
+
+        function toggleTrackingInput() {
+            if (statusSelect.value === 'shipped') {
+                trackingGroup.classList.remove('hidden');
+            } else {
+                trackingGroup.classList.add('hidden');
+            }
+        }
+
+        // Initial check on page load
+        toggleTrackingInput();
+
+        // Listen for changes
+        statusSelect.addEventListener('change', toggleTrackingInput);
+    });
+</script>
+@endpush
+
