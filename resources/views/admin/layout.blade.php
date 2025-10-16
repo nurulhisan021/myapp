@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="w-full px-4 sm:px-6 lg:px-8">
 
     {{-- Mobile Sidebar Toggle --}}
     <div class="md:hidden mb-4">
@@ -29,7 +29,7 @@
              class="{{ request()->routeIs('admin.categories.*') ? 'text-brand font-bold' : '' }} hover:text-brand">
              จัดการหมวดหมู่
           </a>
-          <a href="{{ route('admin.orders.index') }}"
+          <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}"
              class="{{ request()->routeIs('admin.orders.*') ? 'text-brand font-bold' : '' }} hover:text-brand">
              จัดการคำสั่งซื้อ
           </a>

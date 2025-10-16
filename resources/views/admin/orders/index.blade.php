@@ -8,7 +8,7 @@
 
 {{-- Filter by Status --}}
 <div class="mb-4 flex flex-wrap items-center gap-2 text-sm">
-    <a href="{{ route('admin.orders.index') }}" class="{{ !request('status') ? 'font-bold text-brand' : '' }}">ทั้งหมด</a>
+    <a href="{{ route('admin.orders.index', ['status' => 'all']) }}" class="{{ request('status') == 'all' ? 'font-bold text-brand' : '' }}">ทั้งหมด</a>
     <span class="text-gray-300">|</span>
     <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="{{ request('status') == 'pending' ? 'font-bold text-brand' : '' }}">รอดำเนินการ</a>
     <span class="text-gray-300">|</span>

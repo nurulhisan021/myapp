@@ -28,7 +28,7 @@
   @if(request()->routeIs('admin.*'))
     {{-- Admin Header --}}
     <header class="sticky top-0 z-40 bg-white border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        <div class="w-full px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 font-bold text-lg">
                 <span>🛍️</span><span>MyShop (Admin)</span>
             </a>
@@ -44,7 +44,7 @@
   @else
     {{-- Public Header --}}
     <header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        <div class="w-full px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
 
           {{-- Left: Brand --}}
           <a href="{{ route('shop.home') }}" class="flex items-center gap-2 font-bold text-lg">
@@ -100,7 +100,7 @@
 
         {{-- Mobile drawer --}}
         <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col gap-3 text-sm">
+          <div class="w-full px-4 sm:px-6 py-3 flex flex-col gap-3 text-sm">
             <a href="{{ route('products.index') }}" class="hover:text-brand">สินค้า</a>
             <a href="{{ route('cart.index') }}" class="hover:text-brand flex items-center gap-2">
               <span>ตะกร้า</span>
@@ -140,7 +140,7 @@
 
   {{-- Flash message --}}
   @if(session('ok') || session('error'))
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-4">
+    <div class="w-full px-4 sm:px-6 mt-4">
       @if(session('ok'))
         <div class="mb-4 rounded-lg border border-green-200 bg-green-50 text-green-800 px-4 py-3">
           {{ session('ok') }}
@@ -161,7 +161,7 @@
 
   {{-- Footer --}}
   <footer class="border-t bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 text-sm text-gray-500 text-center">
+    <div class="w-full px-4 sm:px-6 py-8 text-sm text-gray-500 text-center">
       <p>© {{ date('Y') }} MyShop — All rights reserved.</p>
     </div>
   </footer>

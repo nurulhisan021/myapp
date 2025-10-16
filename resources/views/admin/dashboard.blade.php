@@ -14,9 +14,11 @@
             <h3 class="text-sm font-medium text-gray-500">ยอดขายเดือนนี้</h3>
             <p class="text-3xl font-bold mt-1">฿{{ number_format($salesThisMonth, 2) }}</p>
         </div>
-        <div class="bg-white border rounded-lg shadow-sm p-6">
-            <h3 class="text-sm font-medium text-gray-500">ออเดอร์รอตรวจสอบ</h3>
-            <p class="text-3xl font-bold mt-1">{{ number_format($pendingOrders) }}</p>
+        <div class="bg-white border rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer">
+            <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="block">
+                <h3 class="text-sm font-medium text-gray-500">ออเดอร์รอตรวจสอบ</h3>
+                <p class="text-3xl font-bold mt-1">{{ number_format($pendingOrders) }}</p>
+            </a>
         </div>
         <div class="bg-white border rounded-lg shadow-sm p-6">
             <h3 class="text-sm font-medium text-gray-500">ลูกค้าทั้งหมด</h3>

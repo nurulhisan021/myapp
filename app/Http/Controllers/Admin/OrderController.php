@@ -11,16 +11,22 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $status = $request->query('status');
+        $status = $request->query('status'); // Can be null, 'all', 'pending', etc.
+
         $orders = Order::with('user')
-            ->when($status, function ($query, $status) {
+            ->when($status === null, function ($query) {
+                // If status is null (no param), default to pending
+                return $query->where('status', 'pending');
+            })
+            ->when($status !== null && $status !== 'all', function ($query) use ($status) {
+                // Filter if status is not null and not 'all'
                 return $query->where('status', $status);
             })
             ->latest()
             ->paginate(15)
             ->withQueryString();
 
-        return view('admin.orders.index', compact('orders'));
+        return view('admin.orders.index', compact('orders', 'status'));
     }
 
     public function show(Order $order)
