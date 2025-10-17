@@ -10,6 +10,7 @@ class CartController extends Controller
     // แสดงตะกร้า
     public function index()
     {
+        session()->forget('buy_now_cart');
         $cart = session('cart', []);
         $total = 0;
         $products = Product::whereIn('id', array_keys($cart))->get();
@@ -40,7 +41,7 @@ class CartController extends Controller
 
         // Check stock availability
         if ($product->stock < ($currentQtyInCart + $qtyToAdd)) {
-            return back()->with('error', 'สต็อกสินค้าไม่เพียงพอ (มีอยู่: ' . $product->stock . ' ชิ้น)');
+            return back()->with('error', 'ไม่สามารถเพิ่ม \'' . $product->name . '\' ได้เนื่องจากสต็อกไม่เพียงพอ (มีอยู่: ' . $product->stock . ' ชิ้น)');
         }
 
         if (isset($cart[$product->id])) {
@@ -69,7 +70,7 @@ class CartController extends Controller
         }
 
         if ($data['qty'] > $product->stock) {
-            return back()->with('error', 'สต็อกสินค้าไม่เพียงพอ (มีอยู่: ' . $product->stock . ' ชิ้น)');
+            return back()->with('error', 'สินค้า \'' . $product->name . '\' มีในสต็อกไม่เพียงพอ (มีอยู่: ' . $product->stock . ' ชิ้น)');
         }
 
         if ($data['qty'] == 0) {

@@ -45,6 +45,18 @@
         </div>
     @endif
 
+    @if(!$isStockSufficient)
+        @php
+            $itemStrings = [];
+            foreach ($insufficientItems as $name => $stock) {
+                $itemStrings[] = "{$name} (มี {$stock} ชิ้น)";
+            }
+        @endphp
+        <div class="mb-4 p-4 rounded-md bg-yellow-100 text-yellow-800">
+            <strong>คำเตือน:</strong> สินค้าต่อไปนี้มีจำนวนไม่เพียงพอในสต็อก: <strong>{{ implode(', ', $itemStrings) }}</strong> กรุณา <a href="{{ route('cart.index') }}" class="font-bold underline">กลับไปที่ตะกร้า</a> เพื่อปรับปรุงจำนวน
+        </div>
+    @endif
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         {{-- Shipping Form --}}
         <div class="bg-white border rounded-lg shadow-sm p-6">
@@ -91,8 +103,14 @@
                 </div>
 
                 <div class="pt-4">
-                    <button type="submit" class="w-full px-6 py-3 rounded-lg bg-brand text-white font-bold hover:bg-brand-dark">
-                        ยืนยันการสั่งซื้อ
+                    <button type="submit" 
+                            class="w-full px-6 py-3 rounded-lg text-white font-bold @if(!$isStockSufficient) bg-gray-400 cursor-not-allowed @else bg-brand hover:bg-brand-dark @endif"
+                            @if(!$isStockSufficient) disabled @endif>
+                        @if($isStockSufficient)
+                            ยืนยันการสั่งซื้อ
+                        @else
+                            สต็อกไม่เพียงพอ
+                        @endif
                     </button>
                 </div>
             </form>
@@ -109,6 +127,11 @@
                             <div>
                                 <p class="font-semibold">{{ $product->name }}</p>
                                 <p class="text-sm text-gray-600">จำนวน: {{ $cart[$product->id]['qty'] }}</p>
+                                @if (!$stockInfo[$product->id]['is_sufficient'])
+                                    <p class="text-sm text-red-500 font-semibold">
+                                        ! สต็อกไม่เพียงพอ (มี {{ $stockInfo[$product->id]['available'] }} ชิ้น)
+                                    </p>
+                                @endif
                             </div>
                         </div>
                         <p class="font-semibold">฿{{ number_format($product->price * $cart[$product->id]['qty'], 2) }}</p>

@@ -31,14 +31,28 @@ class CheckoutController extends Controller
         $products = Product::find($productIds);
 
         $total = 0;
+        $stockInfo = [];
+        $isStockSufficient = true;
+        $insufficientItems = [];
+
         foreach ($products as $product) {
-            $total += $product->price * $cart[$product->id]['qty'];
+            $qty = $cart[$product->id]['qty'];
+            $total += $product->price * $qty;
+
+            if ($product->stock < $qty) {
+                $isStockSufficient = false;
+                $insufficientItems[$product->name] = $product->stock;
+            }
+            $stockInfo[$product->id] = [
+                'is_sufficient' => $product->stock >= $qty,
+                'available' => $product->stock,
+            ];
         }
 
         $bankAccount = BankAccount::where('is_active', true)->first();
         $savedAddresses = Auth::user()->addresses()->latest()->get();
 
-        return view('checkout.index', compact('cart', 'products', 'total', 'bankAccount', 'savedAddresses', 'isBuyNow'));
+        return view('checkout.index', compact('cart', 'products', 'total', 'bankAccount', 'savedAddresses', 'isBuyNow', 'stockInfo', 'isStockSufficient', 'insufficientItems'));
     }
 
     public function initiateBuyNow(Request $request)
