@@ -32,7 +32,7 @@
                                     <input type="hidden" name="product_id" value="{{ $p->id }}">
                                     <input type="hidden" name="qty" value="1">
                                     <button class="w-full px-4 py-2 rounded-lg bg-brand text-white font-semibold hover:bg-brand-dark transition-colors text-sm">
-                                        เพิ่มลงตะกร้า
+                                        ใส่ตะกร้า
                                     </button>
                                 </form>
                             @else

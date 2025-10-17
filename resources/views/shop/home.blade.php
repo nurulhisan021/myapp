@@ -106,7 +106,7 @@
                                       <input type="hidden" name="product_id" value="{{ $p->id }}">
                                       <input type="hidden" name="qty" value="1">
                                       <button class="w-full px-4 py-2.5 rounded-lg bg-brand text-white font-semibold hover:bg-brand-dark transition-colors text-base shadow-md transform hover:scale-105">
-                                        เพิ่มลงตะกร้า
+                                        ใส่ตะกร้า
                                       </button>
                                   </form>
                                   <form action="{{ route('buy-now.submit') }}" method="POST" class="flex-1">

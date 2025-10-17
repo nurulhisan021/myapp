@@ -22,8 +22,8 @@ class ShopController extends Controller
             }
             $products = $productQuery->latest()->get();
         } else {
-            // Default: show latest 6 products
-            $products = $productQuery->latest()->take(6)->get();
+            // Default: show all products
+            $products = $productQuery->latest()->get();
         }
 
         $cartCount = collect(session('cart', []))->sum('qty');
