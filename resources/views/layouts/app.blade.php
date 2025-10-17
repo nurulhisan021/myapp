@@ -91,7 +91,7 @@
           </nav>
 
           {{-- Right: auth actions (desktop) --}}
-          <div class="hidden md:flex items-center gap-3">
+          <div class="hidden md:flex items-center gap-4">
             @auth
               @if(auth()->user()->is_admin)
                 <a href="{{ route('admin.dashboard') }}"
@@ -99,15 +99,31 @@
                   แอดมิน
                 </a>
               @endif
-                            <span class="text-sm text-gray-600">สวัสดี, {{ auth()->user()->name }}</span>
-              <a href="{{ route('account.orders.index') }}" class="text-sm hover:text-brand">ประวัติคำสั่งซื้อ</a>
-              <a href="{{ route('account.addresses.index') }}" class="text-sm hover:text-brand">จัดการที่อยู่</a>
-              <a href="{{ route('account.profile.edit') }}" class="text-sm hover:text-brand">แก้ไขโปรไฟล์</a>
-              <a href="{{ route('wishlist.index') }}" class="text-sm hover:text-brand">สินค้าที่อยากได้</a>
-              <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button class="px-3 py-1.5 rounded-lg border hover:bg-gray-50 text-sm">ออกจากระบบ</button>
-              </form>
+
+              {{-- User Dropdown --}}
+              <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" @click.away="open = false" class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </button>
+
+                <div x-show="open" x-transition class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border py-1 z-10">
+                    <div class="px-4 py-2 border-b">
+                        <p class="text-sm font-semibold text-gray-700">สวัสดี, {{ auth()->user()->name }}</p>
+                    </div>
+                    <a href="{{ route('account.orders.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand">ประวัติคำสั่งซื้อ</a>
+                    <a href="{{ route('account.addresses.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand">จัดการที่อยู่</a>
+                    <a href="{{ route('account.profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand">แก้ไขโปรไฟล์</a>
+                    <a href="{{ route('wishlist.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand">สินค้าที่อยากได้</a>
+                    <div class="border-t"></div>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand">ออกจากระบบ</button>
+                    </form>
+                </div>
+              </div>
+
             @endauth
 
             @guest

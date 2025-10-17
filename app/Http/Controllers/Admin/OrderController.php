@@ -81,6 +81,6 @@ class OrderController extends Controller
             return back()->with('error', 'เกิดข้อผิดพลาดในการอัปเดตสถานะ');
         }
 
-        return back()->with('success', 'อัปเดตสถานะเรียบร้อยแล้ว');
+        return back()->with('ok', 'อัปเดตสถานะเรียบร้อยแล้ว');
     }
 }
