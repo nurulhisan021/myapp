@@ -5,9 +5,11 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">จัดการที่อยู่</h1>
-        <a href="{{ route('account.addresses.create') }}" class="px-4 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark">
-            + เพิ่มที่อยู่ใหม่
-        </a>
+        @if($canAddAddress)
+            <a href="{{ route('account.addresses.create') }}" class="px-4 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark">
+                + เพิ่มที่อยู่ใหม่
+            </a>
+        @endif
     </div>
 
     @if (session('success'))

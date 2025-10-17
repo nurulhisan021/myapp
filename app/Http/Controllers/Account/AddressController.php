@@ -15,7 +15,8 @@ class AddressController extends Controller
     public function index()
     {
         $addresses = Auth::user()->addresses()->latest()->get();
-        return view('account.addresses.index', compact('addresses'));
+        $canAddAddress = $addresses->count() < 4;
+        return view('account.addresses.index', compact('addresses', 'canAddAddress'));
     }
 
     /**
@@ -23,6 +24,9 @@ class AddressController extends Controller
      */
     public function create()
     {
+        if (Auth::user()->addresses()->count() >= 4) {
+            return redirect()->route('account.addresses.index')->with('error', 'คุณสามารถบันทึกที่อยู่ได้สูงสุด 4 ที่อยู่เท่านั้น');
+        }
         return view('account.addresses.create');
     }
 
@@ -31,6 +35,12 @@ class AddressController extends Controller
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+
+        if ($user->addresses()->count() >= 4) {
+            return redirect()->route('account.addresses.index')->with('error', 'คุณสามารถบันทึกที่อยู่ได้สูงสุด 4 ที่อยู่เท่านั้น');
+        }
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'required|string',
@@ -41,7 +51,7 @@ class AddressController extends Controller
             'phone.required' => 'กรุณากรอกเบอร์โทรศัพท์',
         ]);
 
-        Auth::user()->addresses()->create($validatedData);
+        $user->addresses()->create($validatedData);
 
         return redirect()->route('account.addresses.index')->with('success', 'เพิ่มที่อยู่ใหม่เรียบร้อยแล้ว');
     }
