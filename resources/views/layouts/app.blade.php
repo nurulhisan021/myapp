@@ -33,6 +33,31 @@
                 <span>🛍️</span><span>MyShop (Admin)</span>
             </a>
             <div class="flex items-center gap-4">
+                <!-- Notification Dropdown -->
+                <div class="relative" id="notification-dropdown">
+                    <!-- Bell Icon -->
+                    <button id="notification-bell" class="relative text-gray-600 hover:text-gray-800 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-5-5.917V5a1 1 0 00-2 0v.083A6 6 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <!-- Notification Badge -->
+                        <span id="notification-count" class="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center" style="display: none;">0</span>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="notification-menu" class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border overflow-hidden" style="display: none;">
+                        <div class="p-3 border-b">
+                            <h3 class="font-semibold text-sm">การแจ้งเตือน</h3>
+                        </div>
+                        <div id="notification-items" class="divide-y max-h-96 overflow-y-auto">
+                            <!-- Notification items will be injected here by JavaScript -->
+                            <div class="p-3 text-center text-gray-500 text-sm">ไม่มีการแจ้งเตือนใหม่</div>
+                        </div>
+                        <div class="p-2 bg-gray-50 text-center">
+                            <a href="{{ route('admin.orders.index') }}" class="text-sm text-brand hover:underline">ดูออเดอร์ทั้งหมด</a>
+                        </div>
+                    </div>
+                </div>
+
                 <span class="text-sm text-gray-500">{{ auth()->user()->name }}</span>
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf

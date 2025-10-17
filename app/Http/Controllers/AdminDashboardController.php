@@ -73,4 +73,24 @@ class AdminDashboardController extends Controller
             'bestSellingProducts'
         ));
     }
+
+    public function getNotifications()
+    {
+        $unreadCount = Order::whereNull('read_at')->count();
+        $notifications = Order::whereNull('read_at')->latest()->take(5)->get();
+
+        return response()->json([
+            'count' => $unreadCount,
+            'notifications' => $notifications,
+        ]);
+    }
+
+    public function markAsRead(Order $order)
+    {
+        if ($order->read_at === null) {
+            $order->forceFill(['read_at' => now()])->save();
+        }
+
+        return redirect()->route('admin.orders.show', $order);
+    }
 }

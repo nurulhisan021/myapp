@@ -80,4 +80,8 @@ Route::prefix('admin')->middleware(['auth','admin'])->as('admin.')->group(functi
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::post('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
+    // Notifications
+    Route::get('/notifications', [AdminDashboardController::class, 'getNotifications'])->name('notifications.index');
+    Route::post('/notifications/{order}/read', [AdminDashboardController::class, 'markAsRead'])->name('notifications.read');
 });
