@@ -39,13 +39,15 @@ class OrderController extends Controller
     {
         $request->validate([
             'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
-            'tracking_number' => 'nullable|string|max:255|required_if:status,shipped',
-            'shipping_carrier' => 'nullable|string|max:255|required_if:status,shipped',
+            'tracking_number' => 'required_if:status,shipped|nullable|string|max:100',
+            'shipping_carrier' => 'required_if:status,shipped|nullable|string|max:100',
         ], [
             'status.required' => 'กรุณาเลือกสถานะ',
             'status.in' => 'สถานะที่เลือกไม่ถูกต้อง',
             'tracking_number.required_if' => 'กรุณากรอกเลขพัสดุเมื่อสถานะเป็น จัดส่งแล้ว',
             'shipping_carrier.required_if' => 'กรุณากรอกชื่อบริษัทขนส่งเมื่อสถานะเป็น จัดส่งแล้ว',
+            'tracking_number.max' => 'เลขพัสดุต้องมีความยาวไม่เกิน 100 ตัวอักษร',
+            'shipping_carrier.max' => 'ชื่อบริษัทขนส่งต้องมีความยาวไม่เกิน 100 ตัวอักษร',
         ]);
 
         $oldStatus = $order->status;

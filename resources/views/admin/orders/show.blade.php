@@ -89,11 +89,11 @@
 
                     <div id="trackingNumberGroup" class="hidden space-y-3">
                         <label for="tracking_number" class="block text-sm font-medium mb-1">เลขพัสดุ</label>
-                        <input type="text" name="tracking_number" id="tracking_number" value="{{ old('tracking_number', $order->tracking_number) }}" 
+                        <input type="text" name="tracking_number" id="tracking_number" value="{{ old('tracking_number', $order->tracking_number) }}" maxlength="100" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand font-mono">
 
                         <label for="shipping_carrier" class="block text-sm font-medium mb-1">บริษัทขนส่ง</label>
-                        <input type="text" name="shipping_carrier" id="shipping_carrier" value="{{ old('shipping_carrier', $order->shipping_carrier) }}" 
+                        <input type="text" name="shipping_carrier" id="shipping_carrier" value="{{ old('shipping_carrier', $order->shipping_carrier) }}" maxlength="100" 
                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
                     </div>
 
@@ -152,12 +152,18 @@
     document.addEventListener('DOMContentLoaded', function() {
         const statusSelect = document.getElementById('statusSelect');
         const trackingGroup = document.getElementById('trackingNumberGroup');
+        const trackingInput = document.getElementById('tracking_number');
+        const carrierInput = document.getElementById('shipping_carrier');
 
         function toggleTrackingInput() {
             if (statusSelect.value === 'shipped') {
                 trackingGroup.classList.remove('hidden');
+                trackingInput.required = true;
+                carrierInput.required = true;
             } else {
                 trackingGroup.classList.add('hidden');
+                trackingInput.required = false;
+                carrierInput.required = false;
             }
         }
 
