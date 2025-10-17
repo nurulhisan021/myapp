@@ -8,6 +8,8 @@
 
   {{-- Tailwind CDN --}}
   <script src="https://cdn.tailwindcss.com"></script>
+  {{-- Alpine.js CDN --}}
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -165,20 +167,38 @@
   @endif
 
   {{-- Flash message --}}
-  @if(session('ok') || session('error'))
-    <div class="w-full px-4 sm:px-6 mt-4">
-      @if(session('ok'))
-        <div class="mb-4 rounded-lg border border-green-200 bg-green-50 text-green-800 px-4 py-3">
-          {{ session('ok') }}
+    <div class="fixed top-5 right-5 z-50 space-y-2">
+        @if(session('ok'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+            class="relative max-w-sm rounded-lg border border-green-200 bg-green-50 text-green-800 px-4 py-3 pr-10 shadow-lg"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform translate-x-8"
+            x-transition:enter-end="opacity-100 transform translate-x-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 transform translate-x-0"
+            x-transition:leave-end="opacity-0 transform translate-x-8">
+            <p>{{ session('ok') }}</p>
+            <button @click="show = false" class="absolute top-1 right-1 p-1 text-green-800/60 hover:text-green-800/90">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"></path></svg>
+            </button>
         </div>
-      @endif
-      @if(session('error'))
-        <div class="mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 px-4 py-3">
-          {{ session('error') }}
+        @endif
+        @if(session('error'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 8000)"
+            class="relative max-w-sm rounded-lg border border-red-200 bg-red-50 text-red-700 px-4 py-3 pr-10 shadow-lg"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform translate-x-8"
+            x-transition:enter-end="opacity-100 transform translate-x-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 transform translate-x-0"
+            x-transition:leave-end="opacity-0 transform translate-x-8">
+            <p>{{ session('error') }}</p>
+            <button @click="show = false" class="absolute top-1 right-1 p-1 text-red-700/60 hover:text-red-700/90">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"></path></svg>
+            </button>
         </div>
-      @endif
+        @endif
     </div>
-  @endif
 
   {{-- Content --}}
   <main class="py-8 flex-grow">
