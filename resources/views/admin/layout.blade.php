@@ -72,6 +72,8 @@
         const notificationDropdown = document.getElementById('notification-dropdown');
 
         if (bell && menu && countBadge && itemsContainer && notificationDropdown) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
             bell.addEventListener('click', function(event) {
                 event.stopPropagation();
                 menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
@@ -99,12 +101,18 @@
                         itemsContainer.innerHTML = ''; // Clear old items
                         if (data.notifications.length > 0) {
                             data.notifications.forEach(notification => {
-                                const item = document.createElement('a');
-                                item.href = `/admin/notifications/${notification.id}/read`;
-                                item.className = 'block p-3 hover:bg-gray-50';
+                                const isRead = notification.read_at !== null;
+                                const item = document.createElement('div'); // Use div instead of <a> to handle click manually
+                                item.className = 'block p-3 hover:bg-gray-50 cursor-pointer';
+                                
+                                // The URL to mark as read
+                                const markAsReadUrl = `/admin/notifications/${notification.id}/read`;
+                                // The URL to navigate to
+                                const orderUrl = `/admin/orders/${notification.id}`;
+
                                 item.innerHTML = `
                                     <div class="flex items-start gap-3">
-                                        <div class="w-2 h-2 mt-1.5 rounded-full bg-red-500"></div>
+                                        <div class="red-dot w-2 h-2 mt-1.5 rounded-full bg-red-500" style="visibility: ${isRead ? 'hidden' : 'visible'}"></div>
                                         <div>
                                             <p class="text-sm font-semibold">New Order #${notification.id}</p>
                                             <p class="text-xs text-gray-500">Total: ${parseFloat(notification.total_amount).toFixed(2)}</p>
@@ -115,12 +123,28 @@
 
                                 item.addEventListener('click', (e) => {
                                     e.preventDefault();
-                                    const form = document.createElement('form');
-                                    form.method = 'POST';
-                                    form.action = item.href;
-                                    form.innerHTML = '@csrf';
-                                    document.body.appendChild(form);
-                                    form.submit();
+                                    
+                                    // Hide the dot immediately for better UX
+                                    const redDot = item.querySelector('.red-dot');
+                                    if (redDot) {
+                                        redDot.style.visibility = 'hidden';
+                                    }
+
+                                    // Mark as read in the background
+                                    fetch(markAsReadUrl, {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': csrfToken
+                                        },
+                                    }).then(res => res.json()).then(data => {
+                                        // After marking as read, navigate to the order
+                                        window.location.href = orderUrl;
+                                    }).catch(error => {
+                                        console.error('Error marking notification as read:', error);
+                                        // Still navigate even if the mark as read fails
+                                        window.location.href = orderUrl;
+                                    });
                                 });
                                 itemsContainer.appendChild(item);
                             });

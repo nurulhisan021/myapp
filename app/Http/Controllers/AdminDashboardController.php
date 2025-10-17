@@ -77,7 +77,8 @@ class AdminDashboardController extends Controller
     public function getNotifications()
     {
         $unreadCount = Order::whereNull('read_at')->count();
-        $notifications = Order::whereNull('read_at')->latest()->take(5)->get();
+        // Fetch latest 10 orders, regardless of read status
+        $notifications = Order::latest()->take(10)->get();
 
         return response()->json([
             'count' => $unreadCount,
@@ -91,6 +92,6 @@ class AdminDashboardController extends Controller
             $order->forceFill(['read_at' => now()])->save();
         }
 
-        return redirect()->route('admin.orders.show', $order);
+        return response()->json(['status' => 'success']);
     }
 }
