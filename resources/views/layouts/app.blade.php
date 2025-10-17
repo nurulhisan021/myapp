@@ -138,52 +138,45 @@
             @endguest
           </div>
 
-          {{-- Mobile menu button --}}
-          <button id="mobileMenuBtn"
-                  class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg border">
-            ☰
-          </button>
-        </div>
-
-        {{-- Mobile drawer --}}
-        <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
-          <div class="w-full px-4 sm:px-6 py-3 flex flex-col gap-3 text-sm">
-            <a href="{{ route('cart.index') }}" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 backdrop-blur-md border border-white/80 shadow-sm text-gray-700 font-semibold hover:bg-white hover:text-brand transition-all duration-300 ease-in-out">
+          <div class="md:hidden flex items-center gap-2">
+            {{-- Cart Icon --}}
+            <a href="{{ route('cart.index') }}" class="relative p-2 rounded-full bg-white/50 backdrop-blur-md border border-white/80 shadow-sm text-gray-700 hover:bg-white hover:text-brand transition-all duration-300 ease-in-out">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              <span>ตะกร้า</span>
               @if($cartCount)
-                <span class="px-2 py-0.5 rounded-full bg-brand text-white text-xs">{{ $cartCount }}</span>
+                <span class="absolute -top-1 -right-1 px-2 py-0.5 rounded-full bg-brand text-white text-xs font-bold">{{ $cartCount }}</span>
               @endif
             </a>
 
             @auth
-              @if(auth()->user()->is_admin)
-                <a href="{{ route('admin.dashboard') }}" class="hover:text-brand">แอดมิน</a>
-              @endif
-              <div class="border-t pt-2">
-                  <p class="text-sm text-gray-500">บัญชีของฉัน: {{ auth()->user()->name }}</p>
-                  <a href="{{ route('account.orders.index') }}" class="hover:text-brand block py-1">ประวัติคำสั่งซื้อ</a>
-                  <a href="{{ route('account.addresses.index') }}" class="hover:text-brand block py-1">จัดการที่อยู่</a>
-                  <a href="{{ route('account.profile.edit') }}" class="hover:text-brand block py-1">แก้ไขโปรไฟล์</a>
-                  <a href="{{ route('wishlist.index') }}" class="hover:text-brand block py-1">สินค้าที่อยากได้</a>
-              </div>
-              <form action="{{ route('logout') }}" method="POST" class="pt-2 border-t">
-                @csrf
-                <button class="px-3 py-2 rounded-lg border hover:bg-gray-50 w-full text-left">ออกจากระบบ</button>
-              </form>
-            @endauth
+              {{-- User Dropdown --}}
+              <div x-data="{ open: false }" class="relative">
+                <button @click="open = !open" @click.away="open = false" class="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </button>
 
-            @guest
-              <a href="{{ route('login') }}" class="hover:text-brand">เข้าสู่ระบบ</a>
-              <a href="{{ route('register') }}"
-                 class="px-3 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark text-center">
-                สมัครสมาชิก
-              </a>
-            @endguest
+                <div x-show="open" x-transition class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border py-1 z-10">
+                    <div class="px-4 py-2 border-b">
+                        <p class="text-sm font-semibold text-gray-700">สวัสดี, {{ auth()->user()->name }}</p>
+                    </div>
+                    <a href="{{ route('account.orders.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand">ประวัติคำสั่งซื้อ</a>
+                    <a href="{{ route('account.addresses.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand">จัดการที่อยู่</a>
+                    <a href="{{ route('account.profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand">แก้ไขโปรไฟล์</a>
+                    <a href="{{ route('wishlist.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand">สินค้าที่อยากได้</a>
+                    <div class="border-t"></div>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-brand">ออกจากระบบ</button>
+                    </form>
+                </div>
+              </div>
+            @endauth
           </div>
         </div>
+
     </header>
   @endif
 

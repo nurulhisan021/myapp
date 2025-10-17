@@ -8,7 +8,7 @@
 @if(empty($cart))
   <div class="rounded-xl border bg-white p-6 text-center text-gray-500">
     <p>ตะกร้าของคุณยังว่างเปล่า</p>
-    <a href="{{ route('products.index') }}" class="mt-4 inline-block px-5 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark">เลือกซื้อสินค้า</a>
+    <a href="{{ route('shop.home') }}" class="mt-4 inline-block px-5 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark">เลือกซื้อสินค้า</a>
     </div>
 @else
   <div class="rounded-2xl border bg-white overflow-hidden">
