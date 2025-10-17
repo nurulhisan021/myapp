@@ -81,17 +81,20 @@
 
           {{-- Center: main menu (desktop) --}}
           <nav class="hidden md:flex items-center gap-6 text-sm">
-            <a href="{{ route('products.index') }}" class="hover:text-brand">สินค้า</a>
-            <a href="{{ route('cart.index') }}" class="hover:text-brand flex items-center gap-2">
-              <span>ตะกร้า</span>
-              @if($cartCount)
-                <span class="px-2 py-0.5 rounded-full bg-brand text-white text-xs">{{ $cartCount }}</span>
-              @endif
-            </a>
           </nav>
 
           {{-- Right: auth actions (desktop) --}}
           <div class="hidden md:flex items-center gap-4">
+            {{-- Cart Icon --}}
+            <a href="{{ route('cart.index') }}" class="relative p-2 rounded-full bg-white/50 backdrop-blur-md border border-white/80 shadow-sm text-gray-700 hover:bg-white hover:text-brand transition-all duration-300 ease-in-out">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              @if($cartCount)
+                <span class="absolute -top-1 -right-1 px-2 py-0.5 rounded-full bg-brand text-white text-xs font-bold">{{ $cartCount }}</span>
+              @endif
+            </a>
+
             @auth
               @if(auth()->user()->is_admin)
                 <a href="{{ route('admin.dashboard') }}"
@@ -145,8 +148,10 @@
         {{-- Mobile drawer --}}
         <div id="mobileMenu" class="md:hidden hidden border-t bg-white">
           <div class="w-full px-4 sm:px-6 py-3 flex flex-col gap-3 text-sm">
-            <a href="{{ route('products.index') }}" class="hover:text-brand">สินค้า</a>
-            <a href="{{ route('cart.index') }}" class="hover:text-brand flex items-center gap-2">
+            <a href="{{ route('cart.index') }}" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/50 backdrop-blur-md border border-white/80 shadow-sm text-gray-700 font-semibold hover:bg-white hover:text-brand transition-all duration-300 ease-in-out">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
               <span>ตะกร้า</span>
               @if($cartCount)
                 <span class="px-2 py-0.5 rounded-full bg-brand text-white text-xs">{{ $cartCount }}</span>
