@@ -68,7 +68,7 @@
                             <td class="p-5 text-gray-600">{{ $product->category->name ?? '-' }}</td>
                             <td class="p-5 text-gray-600">฿{{ number_format($product->price, 2) }}</td>
                             <td class="p-5 text-gray-600">{{ $product->stock }}</td>
-                            <td class="p-5 text-gray-600">{{ $product->created_at->format('d/m/Y') }}</td>
+                            <td class="p-5 text-gray-600">{{ $product->created_at->translatedFormat('d/m/Y') }}</td>
                             <td class="p-5">
                                 <div class="flex justify-center items-center gap-3">
                                     <a href="{{ route('admin.products.edit', $product) }}" class="text-blue-600 hover:text-blue-800 transition-colors p-2 rounded-full hover:bg-blue-100">

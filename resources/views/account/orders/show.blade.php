@@ -89,7 +89,7 @@
                     @endswitch
                 </p>
                 <p class="text-sm text-gray-500 mt-1">
-                    สั่งซื้อเมื่อ: {{ $order->created_at->format('d M Y, H:i') }}
+                    สั่งซื้อเมื่อ: {{ $order->created_at->format('d M ') . ($order->created_at->format('Y') + 543) . $order->created_at->format(', H:i') }}
                 </p>
             </div>
             <div class="bg-white border rounded-lg shadow-sm p-4">

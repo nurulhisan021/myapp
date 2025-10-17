@@ -222,7 +222,7 @@
   {{-- Footer --}}
   <footer class="border-t bg-white">
     <div class="w-full px-4 sm:px-6 py-8 text-sm text-gray-500 text-center">
-      <p>© {{ date('Y') }} MyShop — All rights reserved.</p>
+      <p>© {{ now()->translatedFormat('Y') }} MyShop — All rights reserved.</p>
     </div>
   </footer>
 

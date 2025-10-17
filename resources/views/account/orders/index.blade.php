@@ -28,7 +28,7 @@
                 @forelse ($orders as $order)
                     <tr class="border-b hover:bg-gray-50">
                         <td class="p-4 font-semibold">#{{ $order->id }}</td>
-                        <td class="p-4">{{ $order->created_at->format('d/m/Y H:i') }}</td>
+                        <td class="p-4">{{ $order->created_at->format('d/m/') . ($order->created_at->format('Y') + 543) . $order->created_at->format(' H:i') }}</td>
                         <td class="p-4">
                             <span class="px-2 py-1 rounded-full text-xs font-medium
                                 @switch($order->status)

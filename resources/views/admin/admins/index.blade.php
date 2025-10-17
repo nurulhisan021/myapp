@@ -35,7 +35,7 @@
                     <td class="p-4">{{ $admins->firstItem() + $loop->index }}</td>
                     <td class="p-4 font-semibold">{{ $admin->name }}</td>
                     <td class="p-4">{{ $admin->email }}</td>
-                    <td class="p-4">{{ $admin->created_at->format('d/m/Y') }}</td>
+                    <td class="p-4">{{ $admin->created_at->translatedFormat('d/m/Y') }}</td>
 <td class="p-4 flex gap-2">
                         @can('update', $admin)
                         <a href="{{ route('admin.admins.edit', $admin) }}" class="text-blue-600 hover:underline">แก้ไข</a>

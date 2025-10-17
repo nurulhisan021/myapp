@@ -40,7 +40,7 @@
                         <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                             <td class="p-5 text-gray-500">{{ $orders->firstItem() + $loop->index }}</td>
                             <td class="p-5 font-semibold text-gray-800">{{ $order->user->name }}</td>
-                            <td class="p-5 text-gray-600">{{ $order->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="p-5 text-gray-600">{{ $order->created_at->translatedFormat('d/m/Y H:i') }}</td>
                             <td class="p-5">
                                 <span class="px-3 py-1 rounded-full text-xs font-medium
                                     @switch($order->status)
