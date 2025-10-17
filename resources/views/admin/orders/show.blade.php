@@ -2,152 +2,174 @@
 @section('title', 'รายละเอียดคำสั่งซื้อ #' . $order->id)
 
 @section('admin_content')
-<div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">รายละเอียดคำสั่งซื้อ #{{ $order->id }}</h1>
-</div>
-
-@if (session('ok'))
-    <div class="mb-4 p-4 rounded-lg border border-green-200 bg-green-50 text-green-800 font-semibold">
-        ✓ {{ session('ok') }}
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">รายละเอียดคำสั่งซื้อ #{{ $order->id }}</h1>
+        <a href="{{ route('admin.orders.index') }}" class="px-5 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-100 transition-colors shadow-sm">กลับไปหน้าคำสั่งซื้อ</a>
     </div>
-@endif
-@if (session('error'))
-    <div class="mb-4 p-4 rounded-lg border border-red-200 bg-red-50 text-red-700 font-semibold">
-        ! {{ session('error') }}
-    </div>
-@endif
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-    {{-- Order Details & Shipping --}}
-    <div class="md:col-span-2 space-y-6">
-        {{-- Items List --}}
-        <div class="bg-white border rounded-lg shadow-sm">
-            <h2 class="text-lg font-semibold p-4 border-b">รายการสินค้า</h2>
-            <div class="divide-y">
-                @foreach($order->items as $item)
-                    <div class="p-4 flex items-center justify-between gap-4">
-                        <div class="flex items-center gap-4">
-                            <img src="{{ $item->product->image_url ?? asset('images/product-placeholder.png') }}" alt="{{ $item->product->name ?? 'N/A' }}" class="w-16 h-16 rounded object-cover">
-                            <div>
-                                <p class="font-semibold">{{ $item->product->name ?? '[สินค้าถูกลบ]' }}</p>
-                                <p class="text-sm text-gray-600">
-                                    {{ $item->quantity }} x ฿{{ number_format($item->price, 2) }}
-                                </p>
+    @if (session('ok'))
+        <div class="mb-6 p-4 rounded-lg border border-green-200 bg-green-50 text-green-800 font-semibold shadow-sm">
+            ✓ {{ session('ok') }}
+        </div>
+    @endif
+    @if (session('error'))
+        <div class="mb-6 p-4 rounded-lg border border-red-200 bg-red-50 text-red-700 font-semibold shadow-sm">
+            ! {{ session('error') }}
+        </div>
+    @endif
 
-                                {{-- Review Info --}}
-                                @if($item->product)
-                                <div class="mt-3 pt-3 border-t border-dashed">
-                                    @forelse($item->product->reviews as $review)
-                                        <div class="text-xs">
-                                            <p class="font-semibold text-gray-700">รีวิวโดย: {{ $review->user->name }}</p>
-                                            <div class="flex items-center gap-1 text-yellow-400 my-1">
-                                                @for ($i = 0; $i < $review->rating; $i++)
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                                                @endfor
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {{-- Order Details & Shipping --}}
+        <div class="lg:col-span-2 space-y-6">
+            {{-- Items List --}}
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <h2 class="text-xl font-semibold p-6 border-b border-gray-200 text-gray-800">รายการสินค้า</h2>
+                <div class="divide-y divide-gray-100">
+                    @foreach($order->items as $item)
+                        <div class="p-6 flex items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center gap-4">
+                                <img src="{{ $item->product->image_url ?? asset('images/product-placeholder.png') }}" alt="{{ $item->product->name ?? 'N/A' }}" class="w-20 h-20 rounded-lg object-cover border border-gray-200 shadow-sm">
+                                <div>
+                                    <p class="font-semibold text-gray-800">{{ $item->product->name ?? '[สินค้าถูกลบ]' }}</p>
+                                    <p class="text-sm text-gray-600">
+                                        {{ $item->quantity }} x ฿{{ number_format($item->price, 2) }}
+                                    </p>
+
+                                    {{-- Review Info --}}
+                                    @if($item->product)
+                                    <div class="mt-4 pt-4 border-t border-dashed border-gray-200">
+                                        @forelse($item->product->reviews as $review)
+                                            <div class="text-xs">
+                                                <p class="font-semibold text-gray-700">รีวิวโดย: {{ $review->user->name }}</p>
+                                                <div class="flex items-center gap-1 text-yellow-400 my-1">
+                                                    @for ($i = 0; $i < $review->rating; $i++)
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                                    @endfor
+                                                </div>
+                                                <p class="text-gray-600">"{{ $review->comment }}"</p>
                                             </div>
-                                            <p class="text-gray-600">"{{ $review->comment }}"</p>
-                                        </div>
-                                    @empty
-                                        <p class="text-xs text-gray-500">ยังไม่มีรีวิว</p>
-                                    @endforelse
+                                        @empty
+                                            <p class="text-xs text-gray-500">ยังไม่มีรีวิว</p>
+                                        @endforelse
+                                    </div>
+                                    @endif
                                 </div>
-                                @endif
+                            </div>
+                            <p class="font-bold text-gray-800">฿{{ number_format($item->price * $item->quantity, 2) }}</p>
+                        </div>
+                    @endforeach
+                </div>
+                <div class="p-6 bg-gray-50 border-t border-gray-200">
+                    <div class="flex justify-between items-center font-bold text-xl text-gray-800">
+                        <span>ยอดรวมทั้งสิ้น</span>
+                        <span>฿{{ number_format($order->total_amount, 2) }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Status & Info --}}
+        <div class="space-y-6">
+            {{-- Update Status Form --}}
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">อัปเดตสถานะ</h2>
+                <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST" id="statusForm">
+                    @csrf
+                    <div class="space-y-4">
+                        <div>
+                            <label for="statusSelect" class="block text-md font-medium text-gray-700 mb-2">สถานะคำสั่งซื้อ</label>
+                            <select name="status" id="statusSelect" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-shadow shadow-sm">
+                                @php
+                                    $statuses = [
+                                        'pending' => 'รอดำเนินการ',
+                                        'processing' => 'กำลังเตรียมจัดส่ง',
+                                        'shipped' => 'จัดส่งแล้ว',
+                                        'delivered' => 'จัดส่งสำเร็จ',
+                                        'cancelled' => 'ยกเลิก',
+                                    ];
+                                @endphp
+                                @foreach($statuses as $status => $label)
+                                    <option value="{{ $status }}" {{ $order->status == $status ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div id="trackingNumberGroup" class="space-y-4 hidden">
+                            <div>
+                                <label for="tracking_number" class="block text-md font-medium text-gray-700 mb-2">เลขพัสดุ</label>
+                                <input type="text" name="tracking_number" id="tracking_number" value="{{ old('tracking_number', $order->tracking_number) }}" maxlength="100"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-shadow shadow-sm font-mono"
+                                       placeholder="กรอกเลขพัสดุ">
+                            </div>
+                            <div>
+                                <label for="shipping_carrier" class="block text-md font-medium text-gray-700 mb-2">บริษัทขนส่ง</label>
+                                <input type="text" name="shipping_carrier" id="shipping_carrier" value="{{ old('shipping_carrier', $order->shipping_carrier) }}" maxlength="100"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-shadow shadow-sm"
+                                       placeholder="เช่น Kerry, Flash Express">
                             </div>
                         </div>
-                        <p class="font-semibold">฿{{ number_format($item->price * $item->quantity, 2) }}</p>
+
+                        <button type="submit" class="w-full px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-md transition-transform transform hover:scale-105">
+                            อัปเดตสถานะ
+                        </button>
                     </div>
-                @endforeach
+                </form>
             </div>
-            <div class="p-4 bg-gray-50 border-t">
-                <div class="flex justify-between items-center font-bold">
-                    <span>ยอดรวมทั้งสิ้น</span>
-                    <span>฿{{ number_format($order->total_amount, 2) }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    {{-- Status & Info --}}
-    <div class="space-y-6">
-        {{-- Update Status Form --}}
-        <div class="bg-white border rounded-lg shadow-sm p-4">
-            <h2 class="text-lg font-semibold mb-3">อัปเดตสถานะ</h2>
-            <form action="{{ route('admin.orders.updateStatus', $order) }}" method="POST" id="statusForm">
-                @csrf
-                <div class="space-y-3">
-                    <select name="status" id="statusSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
-                        @php
-                            $statuses = [
-                                'pending' => 'รอดำเนินการ',
-                                'processing' => 'กำลังเตรียมจัดส่ง',
-                                'shipped' => 'จัดส่งแล้ว',
-                                'delivered' => 'จัดส่งสำเร็จ',
-                                'cancelled' => 'ยกเลิก',
-                            ];
-                        @endphp
-                        @foreach($statuses as $status => $label)
-                            <option value="{{ $status }}" {{ $order->status == $status ? 'selected' : '' }}>
-                                {{ $label }}
-                            </option>
-                        @endforeach
-                    </select>
-
-                    <div id="trackingNumberGroup" class="hidden space-y-3">
-                        <label for="tracking_number" class="block text-sm font-medium mb-1">เลขพัสดุ</label>
-                        <input type="text" name="tracking_number" id="tracking_number" value="{{ old('tracking_number', $order->tracking_number) }}" maxlength="100" 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand font-mono">
-
-                        <label for="shipping_carrier" class="block text-sm font-medium mb-1">บริษัทขนส่ง</label>
-                        <input type="text" name="shipping_carrier" id="shipping_carrier" value="{{ old('shipping_carrier', $order->shipping_carrier) }}" maxlength="100" 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-brand focus:border-brand">
+            {{-- Customer & Shipping Info --}}
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">ข้อมูลลูกค้าและการจัดส่ง</h2>
+                <dl class="space-y-3 text-gray-700">
+                    <div>
+                        <dt class="font-semibold">ชื่อลูกค้า:</dt>
+                        <dd class="ml-4">{{ $order->user->name }} ({{ $order->user->email }})</dd>
+                    </div>
+                    <div class="pt-3 border-t border-gray-200">
+                        <dt class="font-semibold">ชื่อผู้รับ:</dt>
+                        <dd class="ml-4">{{ $order->shipping_name }}</dd>
+                    </div>
+                    <div>
+                        <dt class="font-semibold">ที่อยู่จัดส่ง:</dt>
+                        <dd class="ml-4 whitespace-pre-wrap">{{ $order->shipping_address }}</dd>
+                    </div>
+                    <div>
+                        <dt class="font-semibold">เบอร์โทรศัพท์:</dt>
+                        <dd class="ml-4">{{ $order->shipping_phone }}</dd>
                     </div>
 
-                    <button type="submit" class="w-full px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">
-                        อัปเดตสถานะ
-                    </button>
-                </div>
-            </form>
-        </div>
+                    @if($order->tracking_number)
+                    <div class="pt-3 border-t border-gray-200">
+                        <dt class="font-semibold">เลขพัสดุ:</dt>
+                        <dd class="ml-4 font-mono text-blue-600">{{ $order->tracking_number }}</dd>
+                    </div>
+                    @endif
 
-        <div class="bg-white border rounded-lg shadow-sm p-4">
-            <h2 class="text-lg font-semibold mb-2">ข้อมูลลูกค้าและการจัดส่ง</h2>
-            <dl class="space-y-1 text-sm">
-                <dt class="font-semibold">ชื่อลูกค้า:</dt>
-                <dd class="ml-4">{{ $order->user->name }} ({{ $order->user->email }})</dd>
-                
-                <dt class="font-semibold pt-2 mt-2 border-t">ชื่อผู้รับ:</dt>
-                <dd class="ml-4">{{ $order->shipping_name }}</dd>
-                
-                <dt class="font-semibold mt-2">ที่อยู่จัดส่ง:</dt>
-                <dd class="ml-4 whitespace-pre-wrap">{{ $order->shipping_address }}</dd>
-                
-                <dt class="font-semibold mt-2">เบอร์โทรศัพท์:</dt>
-                <dd class="ml-4">{{ $order->shipping_phone }}</dd>
+                    @if($order->shipping_carrier)
+                    <div>
+                        <dt class="font-semibold">บริษัทขนส่ง:</dt>
+                        <dd class="ml-4">{{ $order->shipping_carrier }}</dd>
+                    </div>
+                    @endif
+                </dl>
+            </div>
 
-                @if($order->tracking_number)
-                <dt class="font-semibold pt-2 mt-2 border-t">เลขพัสดุ:</dt>
-                <dd class="ml-4 font-mono text-blue-600">{{ $order->tracking_number }}</dd>
+            {{-- Payment Slip --}}
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800">สลิปการโอนเงิน</h2>
+                @if($order->payment_slip_url)
+                    <a href="{{ $order->payment_slip_url }}" target="_blank" class="block rounded-lg overflow-hidden border border-gray-200 hover:shadow-md transition-shadow">
+                        <img src="{{ $order->payment_slip_url }}" alt="Payment Slip" class="w-full object-cover">
+                    </a>
+                @else
+                    <p class="text-center text-gray-500 py-6 border border-dashed border-gray-200 rounded-lg">
+                        - ไม่ได้แนบสลิป -
+                    </p>
                 @endif
-
-                @if($order->shipping_carrier)
-                <dt class="font-semibold mt-2">บริษัทขนส่ง:</dt>
-                <dd class="ml-4">{{ $order->shipping_carrier }}</dd>
-                @endif
-            </dl>
+            </div>
         </div>
-
-        <div class="bg-white border rounded-lg shadow-sm p-4">
-            <h2 class="text-lg font-semibold mb-2">สลิปการโอนเงิน</h2>
-            @if($order->payment_slip_url)
-                <a href="{{ $order->payment_slip_url }}" target="_blank">
-                    <img src="{{ $order->payment_slip_url }}" alt="Payment Slip" class="w-full rounded-lg border hover:opacity-80">
-                </a>
-            @else
-                <p class="text-center text-gray-500 py-4">- ไม่ได้แนบสลิป -</p>
-            @endif
-        </div>
-
-
     </div>
 </div>
 @endsection
