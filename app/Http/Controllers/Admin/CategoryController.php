@@ -32,7 +32,7 @@ class CategoryController extends Controller
 
         Category::create($request->only('name'));
 
-        return redirect()->route('admin.categories.index')->with('success', 'สร้างหมวดหมู่ใหม่สำเร็จ');
+        return redirect()->route('admin.categories.index')->with('ok', 'สร้างหมวดหมู่ใหม่สำเร็จ');
     }
 
     public function edit(Category $category)
@@ -53,7 +53,7 @@ class CategoryController extends Controller
 
         $category->update($request->only('name'));
 
-        return redirect()->route('admin.categories.index')->with('success', 'อัปเดตหมวดหมู่สำเร็จ');
+        return redirect()->route('admin.categories.index')->with('ok', 'อัปเดตหมวดหมู่สำเร็จ');
     }
 
     public function destroy(Category $category)
@@ -64,6 +64,6 @@ class CategoryController extends Controller
         
         $category->delete();
 
-        return redirect()->route('admin.categories.index')->with('success', 'ลบหมวดหมู่สำเร็จ');
+        return redirect()->route('admin.categories.index')->with('ok', 'ลบหมวดหมู่สำเร็จ');
     }
 }

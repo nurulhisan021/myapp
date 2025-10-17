@@ -6,9 +6,14 @@
     <h1 class="text-2xl font-bold">รายละเอียดคำสั่งซื้อ #{{ $order->id }}</h1>
 </div>
 
-@if (session('success'))
-    <div class="mb-4 p-4 rounded-md bg-green-100 text-green-800">
-        {{ session('success') }}
+@if (session('ok'))
+    <div class="mb-4 p-4 rounded-lg border border-green-200 bg-green-50 text-green-800 font-semibold">
+        ✓ {{ session('ok') }}
+    </div>
+@endif
+@if (session('error'))
+    <div class="mb-4 p-4 rounded-lg border border-red-200 bg-red-50 text-red-700 font-semibold">
+        ! {{ session('error') }}
     </div>
 @endif
 

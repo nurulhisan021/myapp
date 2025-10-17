@@ -14,33 +14,46 @@
     <div class="flex flex-col md:flex-row gap-8">
 
       {{-- Admin Sidebar --}}
-      <aside id="adminSidebar" class="w-full md:w-64 flex-shrink-0 hidden md:block">
-        <h2 class="font-bold text-lg mb-4">เมนูแอดมิน</h2>
-        <nav class="flex flex-col gap-3">
-          <a href="{{ route('admin.dashboard') }}" 
-             class="{{ request()->routeIs('admin.dashboard') ? 'text-brand font-bold' : '' }} hover:text-brand">
-             แดชบอร์ด
+      <aside id="adminSidebar" class="w-full md:w-64 bg-white text-gray-800 p-6 rounded-lg shadow-md border border-gray-200 hidden md:block">
+        <h2 class="font-bold text-xl mb-6 border-b border-gray-200 pb-4">Admin Panel</h2>
+        <nav class="flex flex-col gap-4">
+
+          <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors {{ request()->routeIs('admin.dashboard') ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
+            <span>แดชบอร์ด</span>
           </a>
-          <a href="{{ route('admin.products.index') }}" 
-             class="{{ request()->routeIs('admin.products.*') ? 'text-brand font-bold' : '' }} hover:text-brand">
-             จัดการสินค้า
+
+          <a href="{{ route('admin.products.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors {{ request()->routeIs('admin.products.*') ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1H8a3 3 0 00-3 3v1.586l-1.293 1.293a1 1 0 001.414 1.414L6 10.414V16a1 1 0 001 1h6a1 1 0 001-1v-5.586l.293.293a1 1 0 001.414-1.414L14 8.586V7a3 3 0 00-3-3h-1V3a1 1 0 00-1-1zm0 4a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd" /></svg>
+            <span>จัดการสินค้า</span>
           </a>
-          <a href="{{ route('admin.categories.index') }}" 
-             class="{{ request()->routeIs('admin.categories.*') ? 'text-brand font-bold' : '' }} hover:text-brand">
-             จัดการหมวดหมู่
+
+          <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors {{ request()->routeIs('admin.categories.*') ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" /></svg>
+            <span>จัดการหมวดหมู่</span>
           </a>
-          <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}"
-             class="{{ request()->routeIs('admin.orders.*') ? 'text-brand font-bold' : '' }} hover:text-brand">
-             จัดการคำสั่งซื้อ
+
+          <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors {{ request()->routeIs('admin.orders.*') ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" /></svg>
+            <span>จัดการคำสั่งซื้อ</span>
           </a>
-          <a href="{{ route('admin.bank-account.index') }}"
-             class="{{ request()->routeIs('admin.bank-account.index') ? 'text-brand font-bold' : '' }} hover:text-brand">
-             จัดการบัญชีธนาคาร
-          </a>
-          <a href="{{ route('admin.admins.index') }}"
-             class="{{ request()->routeIs('admin.admins.*') ? 'text-brand font-bold' : '' }} hover:text-brand">
-             จัดการแอดมิน
-          </a>
+
+          {{-- Settings Section --}}
+          <div class="mt-4 pt-4 border-t border-gray-200">
+            <h3 class="font-semibold text-lg mb-4 text-gray-500">ตั้งค่า</h3>
+            <div class="flex flex-col gap-4">
+              <a href="{{ route('admin.bank-account.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors {{ request()->routeIs('admin.bank-account.index') ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
+                <span>จัดการบัญชีธนาคาร</span>
+              </a>
+    
+              <a href="{{ route('admin.admins.index') }}" class="flex items-center gap-3 px-4 py-2 rounded-lg transition-colors {{ request()->routeIs('admin.admins.*') ? 'bg-gray-100 text-gray-900 font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg>
+                <span>จัดการแอดมิน</span>
+              </a>
+            </div>
+          </div>
+
         </nav>
       </aside>
 
