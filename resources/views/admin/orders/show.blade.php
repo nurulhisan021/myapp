@@ -8,11 +8,7 @@
         <a href="{{ route('admin.orders.index') }}" class="px-5 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-100 transition-colors shadow-sm">กลับไปหน้าคำสั่งซื้อ</a>
     </div>
 
-    @if (session('ok'))
-        <div class="mb-6 p-4 rounded-lg border border-green-200 bg-green-50 text-green-800 font-semibold shadow-sm">
-            ✓ {{ session('ok') }}
-        </div>
-    @endif
+
     @if (session('error'))
         <div class="mb-6 p-4 rounded-lg border border-red-200 bg-red-50 text-red-700 font-semibold shadow-sm">
             ! {{ session('error') }}
